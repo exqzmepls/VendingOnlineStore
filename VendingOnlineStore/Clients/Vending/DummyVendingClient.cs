@@ -1,0 +1,30 @@
+﻿using VendingOnlineStore.Clients.Vending.Dtos;
+
+namespace VendingOnlineStore.Clients.Vending;
+
+public class DummyVendingClient : IVendingClient
+{
+    public async Task<IEnumerable<VendingMachine>> GetMachinesAsync()
+    {
+        await Task.Delay(35);
+        var machines = new VendingMachine[]
+        {
+            new VendingMachine("m1", "hse 3", "бульвар Гагарина, 37А, Пермь", 58.016314, 56.276928),
+            new VendingMachine("m2", "shopping mall", "улица Революции, 13, Пермь", 58.007545, 56.261786),
+            new VendingMachine("m3", "hse 1", "Студенческая улица, 38, Пермь", 58.010662, 56.281509)
+        };
+        return machines;
+    }
+
+    public async Task<IEnumerable<Slot>> GetMachineSlotsAsync(string machineId)
+    {
+        await Task.Delay(35);
+        var slots = new Slot[]
+        {
+            new Slot("s1", new Item("i1", "water", "cool water", "https://www.topfreeshop.ru/4515-9179-large/distillirovannaja-voda.jpg"), 10.99m, 12),
+            new Slot("s2", new Item("i2", "chocolate", "cool chocolate", "https://alania-market.ru/image/cache/catalog/konditerskie-izdeliya/shokolad/7/61099454-1-640x640.jpg"), 15.90m, 20),
+            new Slot("s3", new Item("i3", "cookies", "cool cookies", "https://i.pinimg.com/originals/5d/d5/db/5dd5dbc145317cb6a9fc7fbdfcdcaba5.jpg"), 18.50m, 9)
+        };
+        return slots;
+    }
+}

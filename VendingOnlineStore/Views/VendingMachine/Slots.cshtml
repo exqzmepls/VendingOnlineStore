@@ -1,0 +1,55 @@
+﻿@model IEnumerable<VendingOnlineStore.Models.SlotViewModel>
+
+@{
+    ViewData["Title"] = "Items";
+}
+
+<h1>Items</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemPhotoLink)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ItemDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Count)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in Model)
+        {
+            <tr>
+                <td>
+                    <img src="@slot.ItemPhotoLink" width="150" height="150" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => slot.ItemName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => slot.ItemDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => slot.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => slot.Count)
+                </td>
+                <td>
+                    @Html.ActionLink("Buy", "Buy", new { slotId=slot.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,7 +1,15 @@
+using VendingOnlineStore.Clients.Geo;
+using VendingOnlineStore.Clients.Vending;
+using VendingOnlineStore.Services.Vending;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+var services = builder.Services;
+services.AddSingleton<IVendingClient, DummyVendingClient>();
+services.AddScoped<IGeoClient, GeoClient>();
+services.AddScoped<IVendingService, VendingService>();
+services.AddControllersWithViews();
 
 var app = builder.Build();
 

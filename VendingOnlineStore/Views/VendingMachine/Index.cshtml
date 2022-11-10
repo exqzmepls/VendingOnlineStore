@@ -1,0 +1,43 @@
+﻿@model IEnumerable<VendingOnlineStore.Models.VendingMachineViewModel>
+
+@{
+    ViewData["Title"] = "Vending machines";
+}
+
+<h1>Vending machines</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Distance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var machine in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => machine.Distance)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => machine.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => machine.Description)
+                </td>
+                <td>
+                    @Html.ActionLink("View items", "Slots", new { machineId=machine.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
