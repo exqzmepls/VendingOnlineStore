@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="Yandex.Checkout.V3" Version="1.6.1" />
   </ItemGroup>
 
 </Project>

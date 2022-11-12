@@ -1,4 +1,5 @@
 using VendingOnlineStore.Clients.Geo;
+using VendingOnlineStore.Clients.Payment;
 using VendingOnlineStore.Clients.Vending;
 using VendingOnlineStore.Services.Vending;
 
@@ -7,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var services = builder.Services;
 services.AddSingleton<IVendingClient, DummyVendingClient>();
+services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 services.AddScoped<IGeoClient, GeoClient>();
 services.AddScoped<IVendingService, VendingService>();
 services.AddControllersWithViews();
