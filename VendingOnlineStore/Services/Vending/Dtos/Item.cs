@@ -1,14 +1,14 @@
-﻿namespace VendingOnlineStore.Clients.Vending.Dtos;
+﻿namespace VendingOnlineStore.Services.Vending.Dtos;
 
 public class Item
 {
-    public Item(string id, string name, string description, string photoLink, decimal minPrice)
+    public Item(string id, string name, string description, string photoLink, string priceTag)
     {
         Id = id;
         Name = name;
         Description = description;
         PhotoLink = photoLink;
-        MinPrice = minPrice;
+        PriceTag = priceTag;
     }
 
     public string Id { get; }
@@ -19,5 +19,5 @@ public class Item
 
     public string PhotoLink { get; }
 
-    public decimal MinPrice { get; }
+    public string PriceTag { get; }
 }

@@ -17,4 +17,10 @@ public class BagController : Controller
         var url = await _paymentClient.CreatePayment();
         return Redirect(url);
     }
+
+    public async Task<IActionResult> BuyItem(decimal price)
+    {
+        var url = await _paymentClient.CreatePayment(price);
+        return Redirect(url);
+    }
 }
