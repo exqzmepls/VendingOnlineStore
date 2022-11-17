@@ -47,7 +47,7 @@
                     @Html.DisplayFor(modelItem => slot.Count)
                 </td>
                 <td>
-                    @Html.ActionLink("Buy", "Buy", new { slotId=slot.Id })
+                    @Html.ActionLink("Buy", "Buy", "Bag", new { slotId=slot.Id })
                 </td>
             </tr>
         }
