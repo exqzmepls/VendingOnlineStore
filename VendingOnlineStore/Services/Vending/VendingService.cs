@@ -15,6 +15,30 @@ public class VendingService : IVendingService
         _geoClient = geoClient;
     }
 
+    public async Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId)
+    {
+        var receivedMachines = await _vendingClient.GetItemMachinesAsync(itemId);
+        var machines = receivedMachines.Select(m =>
+        {
+            var distance = _geoClient.GetDistance(m.Latitude, m.Longitude);
+            var machine = new ItemMachine(m.Id, m.Address, $"{Math.Round(distance ?? 0)} m", m.ItemPrice);
+            return machine;
+        });
+        return machines;
+    }
+
+    public async Task<IEnumerable<Item>> GetItemsAsync()
+    {
+        var receivedItems = await _vendingClient.GetItemsAsync();
+        var items = receivedItems.Select(i =>
+        {
+            var priceTag = $"at {i.MinPrice}";
+            var item = new Item(i.Id, i.Name, i.Description, i.PhotoLink, priceTag);
+            return item;
+        });
+        return items;
+    }
+
     public async Task<IEnumerable<VendingMachine>> GetMachinesAsync()
     {
         var receivedMachines = await _vendingClient.GetMachinesAsync();
@@ -38,4 +62,6 @@ public class VendingService : IVendingService
         });
         return slots;
     }
+
+
 }

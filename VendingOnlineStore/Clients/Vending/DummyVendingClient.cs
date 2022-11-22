@@ -4,6 +4,31 @@ namespace VendingOnlineStore.Clients.Vending;
 
 public class DummyVendingClient : IVendingClient
 {
+    public async Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId)
+    {
+        await Task.Delay(35);
+        var itemPrice = itemId == "i1" ? 10.99m : (itemId == "i2" ? 15.90m : 18.50m);
+        var machines = new ItemMachine[]
+        {
+            new ItemMachine("m1", "бульвар Гагарина, 37А, Пермь", 58.016314, 56.276928, itemPrice),
+            new ItemMachine("m2", "улица Революции, 13, Пермь", 58.007545, 56.261786, itemPrice + 2),
+            new ItemMachine("m3", "Студенческая улица, 38, Пермь", 58.010662, 56.281509, itemPrice + 5)
+        };
+        return machines;
+    }
+
+    public async Task<IEnumerable<Item>> GetItemsAsync()
+    {
+        await Task.Delay(35);
+        var items = new Item[]
+        {
+            new Item("i1", "water", "cool water", "https://www.topfreeshop.ru/4515-9179-large/distillirovannaja-voda.jpg", 10.99m),
+            new Item("i2", "chocolate", "cool chocolate", "https://alania-market.ru/image/cache/catalog/konditerskie-izdeliya/shokolad/7/61099454-1-640x640.jpg", 15.90m),
+            new Item("i3", "cookies", "cool cookies", "https://i.pinimg.com/originals/5d/d5/db/5dd5dbc145317cb6a9fc7fbdfcdcaba5.jpg", 18.50m)
+        };
+        return items;
+    }
+
     public async Task<IEnumerable<VendingMachine>> GetMachinesAsync()
     {
         await Task.Delay(35);
@@ -21,9 +46,9 @@ public class DummyVendingClient : IVendingClient
         await Task.Delay(35);
         var slots = new Slot[]
         {
-            new Slot("s1", new Item("i1", "water", "cool water", "https://www.topfreeshop.ru/4515-9179-large/distillirovannaja-voda.jpg"), 10.99m, 12),
-            new Slot("s2", new Item("i2", "chocolate", "cool chocolate", "https://alania-market.ru/image/cache/catalog/konditerskie-izdeliya/shokolad/7/61099454-1-640x640.jpg"), 15.90m, 20),
-            new Slot("s3", new Item("i3", "cookies", "cool cookies", "https://i.pinimg.com/originals/5d/d5/db/5dd5dbc145317cb6a9fc7fbdfcdcaba5.jpg"), 18.50m, 9)
+            new Slot("s1", new ItemInfo("i1", "water", "cool water", "https://www.topfreeshop.ru/4515-9179-large/distillirovannaja-voda.jpg"), 10.99m, 12),
+            new Slot("s2", new ItemInfo("i2", "chocolate", "cool chocolate", "https://alania-market.ru/image/cache/catalog/konditerskie-izdeliya/shokolad/7/61099454-1-640x640.jpg"), 15.90m, 20),
+            new Slot("s3", new ItemInfo("i3", "cookies", "cool cookies", "https://i.pinimg.com/originals/5d/d5/db/5dd5dbc145317cb6a9fc7fbdfcdcaba5.jpg"), 18.50m, 9)
         };
         return slots;
     }

@@ -2,7 +2,7 @@
 
 public class Slot
 {
-    public Slot(string id, Item item, decimal price, int count)
+    public Slot(string id, ItemInfo item, decimal price, int count)
     {
         Id = id;
         Item = item;
@@ -12,7 +12,7 @@ public class Slot
 
     public string Id { get; }
 
-    public Item Item { get; }
+    public ItemInfo Item { get; }
 
     public decimal Price { get; }
 
