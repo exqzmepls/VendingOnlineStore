@@ -8,7 +8,7 @@ public class YandexPaymentClient : IPaymentClient
 
     public YandexPaymentClient()
     {
-        var client = new Client("957383", "");
+        var client = new Client("957383", "hjghj");
         _client = client.MakeAsync();
     }
 

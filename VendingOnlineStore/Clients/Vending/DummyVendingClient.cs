@@ -4,6 +4,13 @@ namespace VendingOnlineStore.Clients.Vending;
 
 public class DummyVendingClient : IVendingClient
 {
+    public async Task<Item> GetItemAsync(string itemId)
+    {
+        var items = await GetItemsAsync();
+        var item = items.Single(i => i.Id == itemId);
+        return item;
+    }
+
     public async Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId)
     {
         await Task.Delay(35);

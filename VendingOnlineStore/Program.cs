@@ -1,6 +1,7 @@
 using VendingOnlineStore.Clients.Geo;
 using VendingOnlineStore.Clients.Payment;
 using VendingOnlineStore.Clients.Vending;
+using VendingOnlineStore.Services.Bag;
 using VendingOnlineStore.Services.Vending;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 services.AddSingleton<IVendingClient, DummyVendingClient>();
 services.AddSingleton<IPaymentClient, YandexPaymentClient>();
+services.AddSingleton<IBagService, DummyBagService>();
 services.AddScoped<IGeoClient, GeoClient>();
 services.AddScoped<IVendingService, VendingService>();
 services.AddControllersWithViews();

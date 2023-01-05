@@ -1,0 +1,52 @@
+﻿@model IEnumerable<VendingOnlineStore.Models.BagItemViewModel>
+
+@{
+    ViewData["Title"] = "Bag";
+}
+
+<h1>Bag</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PhotoLink)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Count)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PhotoLink)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Count)
+                </td>
+                <td>
+                    <button onclick="decrease(this)" value="@item.Id">-</button> |
+                    <button onclick="" value="@item.Id"">+</button> |
+                <button onclick="" value="@item.Id"">remove</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<script>
+    function decrease(objButton) {
+        console.log(objButton.value)
+    }
+</script>

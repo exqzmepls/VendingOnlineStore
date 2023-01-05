@@ -12,5 +12,7 @@ public interface IVendingClient
 
     public Task<IEnumerable<Item>> GetItemsAsync();
 
+    public Task<Item> GetItemAsync(string itemId);
+
     public Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId);
 }
