@@ -1,4 +1,4 @@
-﻿@model IEnumerable<VendingOnlineStore.Models.BagItemViewModel>
+﻿@model IEnumerable<BagMachineViewModel>
 
 @{
     ViewData["Title"] = "Bag";
@@ -6,47 +6,49 @@
 
 <h1>Bag</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.PhotoLink)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Count)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhotoLink)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Count)
-                </td>
-                <td>
-                    <button onclick="decrease(this)" value="@item.Id">-</button> |
-                    <button onclick="" value="@item.Id"">+</button> |
-                <button onclick="" value="@item.Id"">remove</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div id="content">
+    @{
+        await Html.RenderPartialAsync("_BagContent", Model);
+    }
+</div>
 
 
 <script>
     function decrease(objButton) {
-        console.log(objButton.value)
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/DecreaseItemCount?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function increase(objButton) {
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/IncreaseItemCount?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function remove(objButton) {
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/RemoveItem?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function successCallback(response) {
+        $("#content").html(response);
+    }
+
+    function errorCallback() {
+        alert("Something went wrong, try to reload this page.");
     }
 </script>

@@ -15,4 +15,6 @@ public interface IVendingClient
     public Task<Item> GetItemAsync(string itemId);
 
     public Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId);
+
+    public Task<IEnumerable<MachineItemsInfo>> GetMachinesItemsInfoAsync(IEnumerable<MachineItemsQuery> machineItems);
 }

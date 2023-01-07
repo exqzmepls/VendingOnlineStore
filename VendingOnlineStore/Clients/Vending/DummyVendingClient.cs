@@ -48,6 +48,36 @@ public class DummyVendingClient : IVendingClient
         return machines;
     }
 
+    public async Task<IEnumerable<MachineItemsInfo>> GetMachinesItemsInfoAsync(IEnumerable<MachineItemsQuery> machineItems)
+    {
+        var machines = (await GetMachinesAsync()).ToArray();
+        var result = machineItems.Select(m =>
+        {
+            var machine = machines.Single(x => x.Id == m.MachineId);
+
+            var machineInfo = new MachineInfo(machine.Id, machine.Description, machine.Address);
+
+            var itemsInfo = m.ItemsIds.Select(i =>
+            {
+                var item = GetItemAsync(i).Result;
+
+                var itemInfo = new ItemInfo(item.Id, item.Name, item.Description, item.PhotoLink);
+
+                var slots = GetMachineSlotsAsync(machine.Id).Result;
+                var itemSlot = slots.SingleOrDefault(s => s.Item.ExternalId == item.Id);
+                var count = itemSlot?.Count ?? 0;
+                var price = itemSlot?.Price;
+
+                var machineItemInfo = new MachineItemInfo(itemInfo, count, price);
+                return machineItemInfo;
+            });
+
+            var machineItemsInfo = new MachineItemsInfo(machineInfo, itemsInfo);
+            return machineItemsInfo;
+        });
+        return result;
+    }
+
     public async Task<IEnumerable<Slot>> GetMachineSlotsAsync(string machineId)
     {
         await Task.Delay(35);

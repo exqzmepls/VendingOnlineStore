@@ -4,9 +4,9 @@ namespace VendingOnlineStore.Repositories.BagMachine;
 
 public interface IBagMachineRepository
 {
-    public IEnumerable<BagMachineDto> GetAll();
+    public IQueryable<BagMachineDto> GetAll();
 
-    public string? Add(string externalId);
+    public Task<BagMachineDto?> GetOrDefaultAsync(Guid id);
 
-    public bool Delete(string id);
+    public Task<bool> DeleteAsync(Guid id);
 }

@@ -1,12 +1,14 @@
-﻿namespace VendingOnlineStore.Repositories.BagItem;
+﻿using VendingOnlineStore.Repositories.BagItem.Dtos;
+
+namespace VendingOnlineStore.Repositories.BagItem;
 
 public interface IBagItemRepository
 {
-    public string? Add(string externalId, string vendingMachineId);
+    public Task<BagItemDto?> GetOrDefaultAsync(Guid id);
 
-    public int? GetCount(string id);
+    public Task<Guid?> AddAsync(NewBagItemDto newBagItem);
 
-    public int? UpdateCount(string id, int shift);
+    public Task<BagItemDto?> UpdateAsync(Guid id, UpdatedBagItemDto updatedBagItemDto);
 
-    public bool Delete(string id);
+    public Task<bool> DeleteAsync(Guid id);
 }
