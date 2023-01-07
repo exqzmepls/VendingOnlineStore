@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using VendingOnlineStore.Clients.Payment;
+﻿using Core.Clients.Payment;
+using Core.Services.Bag;
+using Core.Services.Bag.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Bag;
-using VendingOnlineStore.Services.Bag;
-using VendingOnlineStore.Services.Bag.Dtos;
 
 namespace VendingOnlineStore.Controllers;
 

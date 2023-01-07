@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Core.Services.Vending;
+using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models;
-using VendingOnlineStore.Services.Vending;
 
 namespace VendingOnlineStore.Controllers;
 public class ItemController : Controller
