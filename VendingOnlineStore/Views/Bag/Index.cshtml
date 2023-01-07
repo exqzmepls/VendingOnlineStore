@@ -1,0 +1,54 @@
+﻿@model IEnumerable<BagMachineViewModel>
+
+@{
+    ViewData["Title"] = "Bag";
+}
+
+<h1>Bag</h1>
+
+<div id="content">
+    @{
+        await Html.RenderPartialAsync("_BagContent", Model);
+    }
+</div>
+
+
+<script>
+    function decrease(objButton) {
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/DecreaseItemCount?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function increase(objButton) {
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/IncreaseItemCount?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function remove(objButton) {
+        const itemId = objButton.value;
+        $.ajax({
+            url: "Bag/RemoveItem?itemId=" + itemId,
+            type: 'Post',
+            success: successCallback,
+            error: errorCallback
+        });
+    }
+
+    function successCallback(response) {
+        $("#content").html(response);
+    }
+
+    function errorCallback() {
+        alert("Something went wrong, try to reload this page.");
+    }
+</script>
