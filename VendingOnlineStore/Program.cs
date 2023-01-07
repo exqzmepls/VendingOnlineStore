@@ -1,12 +1,12 @@
+using Core.Clients.Geo;
+using Core.Clients.Payment;
+using Core.Clients.Vending;
+using Core.Repositories.BagItem;
+using Core.Repositories.BagMachine;
+using Core.Services.Bag;
+using Core.Services.Vending;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using VendingOnlineStore.Clients.Geo;
-using VendingOnlineStore.Clients.Payment;
-using VendingOnlineStore.Clients.Vending;
-using VendingOnlineStore.Repositories.BagItem;
-using VendingOnlineStore.Repositories.BagMachine;
-using VendingOnlineStore.Services.Bag;
-using VendingOnlineStore.Services.Vending;
 
 var builder = WebApplication.CreateBuilder(args);
 
