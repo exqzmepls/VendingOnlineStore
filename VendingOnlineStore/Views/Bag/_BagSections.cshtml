@@ -1,0 +1,6 @@
+﻿@model IEnumerable<BagSectionViewModel>
+
+@foreach (var bagSection in Model)
+{
+    await Html.RenderPartialAsync("_BagSectionDetails", bagSection);
+}

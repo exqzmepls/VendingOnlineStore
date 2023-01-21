@@ -1,0 +1,51 @@
+﻿@using VendingOnlineStore.Models.Checkout
+@using VendingOnlineStore.Models.Order
+@model CheckoutDetailsViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<h1>Checkout</h1>
+
+@{
+    await Html.RenderPartialAsync("_PickupPoint", Model.PickupPoint);
+}
+
+<h3>Order Contents</h3>
+@foreach (var contentDetails in Model.Contents)
+{
+    await Html.RenderPartialAsync("_ContentDetails", contentDetails);
+}
+
+<div>
+    <dl class="row">
+        <dt class="col-sm-11 d-flex justify-content-end">
+            @Html.DisplayNameFor(model => model.TotalPrice)
+        </dt>
+        <dd class="col-sm-1 d-flex justify-content-center">
+            @Html.DisplayFor(model => model.TotalPrice)
+        </dd>
+    </dl>
+</div>
+
+<div class="row">
+    <div class="col-sm-11 d-flex justify-content-end">
+        @Html.ActionLink("Back to Bag", "Index", "Bag")
+    </div>
+    <div class="col-sm-1 d-flex justify-content-center">
+        <form asp-action="Create" asp-controller="Order" method="post">
+            <div class="form-group">
+                <input type="hidden" name="@nameof(NewOrderViewModel.BagSectionId)" value="@Model.BagSectionId"/>
+                @for (var i = 0; i < Model.Contents.Count; i++)
+                {
+                    var bagContentIdInputName = $"{nameof(NewOrderViewModel.Contents)}[{i}].{nameof(NewOrderContentViewModel.BagContentId)}";
+                    var countInputName = $"{nameof(NewOrderViewModel.Contents)}[{i}].{nameof(NewOrderContentViewModel.Count)}";
+                    <input type="hidden" name="@bagContentIdInputName" value="@Model.Contents.ElementAt(i).BagContentId"/>
+                    <input type="hidden" name="@countInputName" value="@Model.Contents.ElementAt(i).SuggestedCount"/>
+                }
+                <input type="submit" value="Buy" class="btn btn-primary"/>
+            </div>
+        </form>
+    </div>
+</div>
