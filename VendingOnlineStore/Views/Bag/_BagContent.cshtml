@@ -1,6 +1,0 @@
-﻿@model IEnumerable<BagMachineViewModel>
-
-@foreach (var bagMachine in Model)
-{
-    await Html.RenderPartialAsync("_BagMachineDetails", bagMachine);
-}
