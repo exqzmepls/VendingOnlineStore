@@ -7,9 +7,11 @@ public interface IOrderRepository
     public OrderDetails? GetByIdOrDefault(Guid id);
 
     public Guid CreateOrder(NewOrder newOrder);
+
+    public void Update(Guid id, OrderUpdate orderUpdate);
 }
 
-public record OrderBrief(Guid Id, DateTime CreationDateUtc, Status Status);
+public record OrderBrief(Guid Id, DateTime CreationDateUtc, Status Status, string PaymentId, string BookingId);
 
 public record OrderDetails(Guid Id, DateTime CreationDateUtc, string BookingId, Status Status, PaymentInfo Payment,
     PickupPointInfo PickupPoint, IReadOnlyCollection<ContentInfo> Contents, decimal TotalPrice);
@@ -31,3 +33,5 @@ public record NewOrder(string BookingId, PaymentInfo Payment, PickupPointInfo Pi
 public record PickupPointInfo(string Id, string Address, string Description);
 
 public record ContentInfo(string Id, string Name, string Description, string PhotoLink, int Count, decimal Price);
+
+public record OrderUpdate(Status NewStatus);

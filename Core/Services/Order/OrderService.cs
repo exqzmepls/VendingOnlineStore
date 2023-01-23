@@ -1,5 +1,5 @@
-﻿using Core.Clients.Payment;
-using Core.Clients.Vending;
+﻿using Core.Clients.Booking;
+using Core.Clients.Payment;
 using Core.Extensions;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
@@ -13,15 +13,15 @@ public class OrderService : IOrderService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IOrderRepository _orderRepository;
-    private readonly IVendingClient _vendingClient;
+    private readonly IBookingClient _bookingClient;
     private readonly IPaymentClient _paymentClient;
 
     public OrderService(IBagSectionRepository bagSectionRepository, IOrderRepository orderRepository,
-        IVendingClient vendingClient, IPaymentClient paymentClient)
+        IBookingClient bookingClient, IPaymentClient paymentClient)
     {
         _bagSectionRepository = bagSectionRepository;
         _orderRepository = orderRepository;
-        _vendingClient = vendingClient;
+        _bookingClient = bookingClient;
         _paymentClient = paymentClient;
     }
 
@@ -54,7 +54,7 @@ public class OrderService : IOrderService
         var newBooking = new NewBooking(bagSectionData.PickupPointId, newBookingContents);
 
         // request to buy
-        var bookingDetails = await _vendingClient.CreateBookingAsync(newBooking);
+        var bookingDetails = await _bookingClient.CreateBookingAsync(newBooking);
         var bookingContents = bookingDetails.Contents;
 
         // validate response

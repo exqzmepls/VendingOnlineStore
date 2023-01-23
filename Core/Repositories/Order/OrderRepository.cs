@@ -1,6 +1,7 @@
 ﻿using Core.Extensions;
 using Infrastructure;
 using Infrastructure.Models;
+using Microsoft.EntityFrameworkCore;
 using OrderEntity = Infrastructure.Models.Order;
 
 namespace Core.Repositories.Order;
@@ -16,7 +17,7 @@ public class OrderRepository : IOrderRepository
 
     public IQueryable<OrderBrief> GetAll()
     {
-        var result = _appDbContext.Orders.Select(o => MapToOrderBrief(o));
+        var result = _appDbContext.Orders.Include(o => o.Payment).Select(o => MapToOrderBrief(o));
         return result;
     }
 
@@ -42,13 +43,20 @@ public class OrderRepository : IOrderRepository
         return entry.Entity.Id;
     }
 
+    public void Update(Guid id, OrderUpdate orderUpdate)
+    {
+        throw new NotImplementedException();
+    }
+
     private static OrderBrief MapToOrderBrief(OrderEntity order)
     {
         var status = MapToStatus(order.Status);
         var orderBrief = new OrderBrief(
             order.Id,
             order.CreationDateUtc,
-            status
+            status,
+            order.Payment!.ExternalId,
+            order.BookingId
         );
         return orderBrief;
     }

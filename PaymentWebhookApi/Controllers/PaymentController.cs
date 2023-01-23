@@ -20,6 +20,20 @@ public class PaymentController : ControllerBase
     [HttpPost]
     public IActionResult Webhook([FromBody] WebhookNotification notification)
     {
+        try
+        {
+            var eventName = notification.Event;
+            var paymentId = notification.Object.Id;
+            _logger.LogInformation("Webhook notification ({EventName} for payment {PaymentId})", eventName, paymentId);
+            _paymentService.ProcessEventAsync(eventName, paymentId);
+        }
+        catch
+        {
+            _logger.LogInformation("Webhook error");
+            return BadRequest();
+        }
+
+        _logger.LogInformation("Webhook succeed");
         return Ok();
     }
 }

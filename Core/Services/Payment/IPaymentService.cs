@@ -2,9 +2,5 @@ namespace Core.Services.Payment;
 
 public interface IPaymentService
 {
-    public void Succeeded(string paymentId);
-
-    public Task Canceled(string paymentId);
-
-    public Task WaitingForCapture(string paymentId);
+    public Task ProcessEventAsync(string eventName, string paymentId);
 }
