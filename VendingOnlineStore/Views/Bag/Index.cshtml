@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BagMachineViewModel>
+﻿@model IEnumerable<BagSectionViewModel>
 
 @{
     ViewData["Title"] = "Bag";
@@ -6,9 +6,9 @@
 
 <h1>Bag</h1>
 
-<div id="content">
+<div id="sections">
     @{
-        await Html.RenderPartialAsync("_BagContent", Model);
+        await Html.RenderPartialAsync("_BagSections", Model);
     }
 </div>
 
@@ -45,7 +45,7 @@
     }
 
     function successCallback(response) {
-        $("#content").html(response);
+        $("#sections").html(response);
     }
 
     function errorCallback() {

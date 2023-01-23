@@ -1,0 +1,36 @@
+﻿@model VendingOnlineStore.Models.Checkout.ItemViewModel
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PhotoLink)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <img src="@Model.PhotoLink" width="150" height="150"/>
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AvailableCount)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Price)
+            </td>
+        </tr>
+    </tbody>
+</table>

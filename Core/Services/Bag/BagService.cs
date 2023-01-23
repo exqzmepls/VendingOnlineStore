@@ -1,210 +1,159 @@
 ﻿using System.Collections.Immutable;
 using Core.Clients.Vending;
-using Core.Clients.Vending.Dtos;
-using Core.Repositories.BagItem;
-using Core.Repositories.BagItem.Dtos;
-using Core.Repositories.BagMachine;
-using Core.Repositories.BagMachine.Dtos;
-using Core.Services.Bag.Dtos;
-using ItemInfo = Core.Services.Bag.Dtos.ItemInfo;
-using MachineInfo = Core.Services.Bag.Dtos.MachineInfo;
-using MachineItemInfo = Core.Services.Bag.Dtos.MachineItemInfo;
+using Core.Extensions;
+using Core.Repositories.BagContent;
+using Core.Repositories.BagSection;
 
 namespace Core.Services.Bag;
 
 public class BagService : IBagService
 {
-    private readonly IBagMachineRepository _bagMachineRepository;
-    private readonly IBagItemRepository _bagItemRepository;
+    private readonly IBagSectionRepository _bagSectionRepository;
+    private readonly IBagContentRepository _bagContentRepository;
     private readonly IVendingClient _vendingClient;
 
-    public BagService(IBagMachineRepository bagMachineRepository, IBagItemRepository bagItemRepository, IVendingClient vendingClient)
+    public BagService(IBagSectionRepository bagSectionRepository, IBagContentRepository bagContentRepository,
+        IVendingClient vendingClient)
     {
-        _bagMachineRepository = bagMachineRepository;
-        _bagItemRepository = bagItemRepository;
+        _bagSectionRepository = bagSectionRepository;
+        _bagContentRepository = bagContentRepository;
         _vendingClient = vendingClient;
     }
 
-    public async Task<bool> DecreaseItemCountAsync(Guid itemId)
+    public async Task<bool> DecreaseContentCountAsync(Guid contentId)
     {
-        var item = await _bagItemRepository.GetOrDefaultAsync(itemId);
-        if (item == default)
+        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
+        if (bagContentDetails == default)
         {
             return false;
         }
 
-        var updatedCount = item.Count - 1;
+        var updatedCount = bagContentDetails.Count - 1;
         if (updatedCount == 0)
         {
-            var isRemoved = await RemoveItemAsync(item.Id);
+            var isRemoved = await RemoveContentAsync(bagContentDetails.Id);
             return isRemoved;
         }
 
-        var updatedItem = new UpdatedBagItemDto(updatedCount);
-        var currentItem = await _bagItemRepository.UpdateAsync(item.Id, updatedItem);
-        if (currentItem == default)
-        {
-            return false;
-        }
-
-        return true;
+        var bagContentUpdate = new BagContentUpdate(updatedCount);
+        var updateBagContentDetails = await _bagContentRepository.UpdateAsync(bagContentDetails.Id, bagContentUpdate);
+        return updateBagContentDetails != default;
     }
 
-    public async Task<IEnumerable<BagMachine>> GetContentAsync()
+    public async Task<IReadOnlyCollection<BagSection>> GetSectionsAsync()
     {
-        var contentSource = _bagMachineRepository.GetAll();
-        var content = GetContent(contentSource).ToImmutableArray();
+        // get sections data
+        var bagSectionsData = _bagSectionRepository.GetAll().ToImmutableArray();
 
-        var isEmpty = !content.Any();
+        var isEmpty = !bagSectionsData.Any();
         if (isEmpty)
         {
-            return Enumerable.Empty<BagMachine>();
+            return Enumerable.Empty<BagSection>().ToReadOnlyCollection();
         }
 
-        var machinesItemsQuery = BuildQueryObject(content);
-        var machinesItemsInfo = await _vendingClient.GetMachinesItemsInfoAsync(machinesItemsQuery);
-
-        var bagMachines = content.Select(machine =>
+        // api request
+        var specifications = bagSectionsData.Select(bagSectionData =>
         {
-            var machineItems = machinesItemsInfo.Single(m => m.MachineInfo.ExternalId == machine.ExternalId);
-            var machineInfo = Map(machineItems.MachineInfo);
+            var itemsIds = bagSectionData.Contents.Select(bagContentData => bagContentData.ItemId);
+            var specification = new PickupPointContentsSpecification(bagSectionData.PickupPointId, itemsIds);
+            return specification;
+        });
+        var pickupPointsPresentations = await _vendingClient.GetPickupPointsPresentationsAsync(specifications);
 
-            var bagMachineItems = machine.Items.Select(item =>
+        var bagSections = bagSectionsData.Select(bagSectionData =>
             {
-                var machineItem = machineItems.MachineItems.Single(i => i.ItemInfo.ExternalId == item.ExternalId);
+                var bagSection = GetBagSectionFromPickupPointsPresentations(bagSectionData, pickupPointsPresentations);
+                return bagSection;
+            })
+            .OrderBy(m => m.Id)
+            .ToReadOnlyCollection();
+        return bagSections;
+    }
 
-                var itemInfo = Map(machineItem.ItemInfo);
+    public async Task<bool> IncreaseContentCountAsync(Guid contentId)
+    {
+        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
+        if (bagContentDetails == default)
+        {
+            return false;
+        }
 
-                var machineItemPrice = machineItem.Price;
-                var machineItemInfo = new MachineItemInfo(machineItem.AvailableCount, machineItemPrice);
+        var updatedCount = bagContentDetails.Count + 1;
+        var bagContentUpdate = new BagContentUpdate(updatedCount);
+        var updateBagContentDetails = await _bagContentRepository.UpdateAsync(bagContentDetails.Id, bagContentUpdate);
+        return updateBagContentDetails != default;
+    }
 
-                var itemCount = item.Count;
-                var itemTotalPrice = itemCount * machineItemPrice;
+    public async Task<bool> RemoveContentAsync(Guid contentId)
+    {
+        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
+        if (bagContentDetails == default)
+        {
+            return false;
+        }
 
-                var bagItem = new BagItem(item.Id, itemInfo, machineItemInfo, itemCount, itemTotalPrice);
-                return bagItem;
+        var contentSectionId = bagContentDetails.SectionId;
+        var bagSectionDetails = await _bagSectionRepository.GetByIdOrDefaultAsync(contentSectionId);
+        if (bagSectionDetails == default)
+        {
+            return false;
+        }
+
+        var sectionContentsCount = bagSectionDetails.Contents.Count;
+        if (sectionContentsCount == 1)
+        {
+            var isSectionRemoved = await _bagSectionRepository.DeleteAsync(contentSectionId);
+            return isSectionRemoved;
+        }
+
+        var isContentRemoved = await _bagContentRepository.DeleteAsync(bagContentDetails.Id);
+        return isContentRemoved;
+    }
+
+    private static BagSection GetBagSectionFromPickupPointsPresentations(BagSectionDetails bagSectionData,
+        IEnumerable<PickupPointPresentation> pickupPointsPresentations)
+    {
+        // get pickup point contents
+        var pickupPointId = bagSectionData.PickupPointId;
+        var pickupPointPresentation = pickupPointsPresentations.Single(c => c.PickupPoint.Id == pickupPointId);
+
+        var pickupPoint = MapToPickupPoint(pickupPointPresentation.PickupPoint);
+        var contents = bagSectionData.Contents.Select(bagContentData =>
+            {
+                var bagContent = GetBagContentFromPickupPointContents(bagContentData, pickupPointPresentation.Contents);
+                return bagContent;
             })
             .OrderBy(i => i.Id)
-            .ToArray();
+            .ToReadOnlyCollection();
+        var totalPrice = contents.Sum(content => content.TotalPrice);
 
-            var machineTotalPrice = bagMachineItems.Sum(i => i.TotalPrice);
-
-            var bagMachine = new BagMachine(machine.Id, machineInfo, Array.AsReadOnly(bagMachineItems), machineTotalPrice);
-            return bagMachine;
-        })
-        .OrderBy(m => m.Id);
-        return bagMachines;
+        var bagSection = new BagSection(bagSectionData.Id, pickupPoint, contents, totalPrice);
+        return bagSection;
     }
 
-    public async Task<bool> IncreaseItemCountAsync(Guid itemId)
+    private static BagContent GetBagContentFromPickupPointContents(BagContentBrief bagContentData,
+        IEnumerable<ContentDetails> pickupPointContents)
     {
-        var item = await _bagItemRepository.GetOrDefaultAsync(itemId);
-        if (item == default)
-        {
-            return false;
-        }
+        var itemId = bagContentData.ItemId;
+        var (itemDetails, availableCount, price) = pickupPointContents.Single(c => c.Item.Id == itemId);
 
-        var updatedCount = item.Count + 1;
-        var updatedItem = new UpdatedBagItemDto(updatedCount);
-        var currentItem = await _bagItemRepository.UpdateAsync(item.Id, updatedItem);
-        if (currentItem == default)
-        {
-            return false;
-        }
+        var item = MapToItem(itemDetails);
+        var count = bagContentData.Count;
+        var totalPrice = count * price;
 
-        return true;
+        var bagContent = new BagContent(bagContentData.Id, item, availableCount, price, count, totalPrice);
+        return bagContent;
     }
 
-    public async Task<bool> RemoveItemAsync(Guid itemId)
+    private static PickupPoint MapToPickupPoint(PickupPointDetails pickupPointDetails)
     {
-        var item = await _bagItemRepository.GetOrDefaultAsync(itemId);
-        if (item == default)
-        {
-            return false;
-        }
-
-        var itemMachineId = item.MachineId;
-        var machine = await _bagMachineRepository.GetOrDefaultAsync(itemMachineId);
-        if (machine == default)
-        {
-            return false;
-        }
-
-        var machineItemsCount = machine.Items.Count();
-        if (machineItemsCount == 1)
-        {
-            await _bagMachineRepository.DeleteAsync(itemMachineId);
-            return true;
-        }
-
-        var isRemoved = await _bagItemRepository.DeleteAsync(item.Id);
-        return isRemoved;
+        var pickupPoint = new PickupPoint(pickupPointDetails.Description, pickupPointDetails.Address);
+        return pickupPoint;
     }
 
-    private static IEnumerable<BagMachineContent> GetContent(IQueryable<BagMachineDto> contentSource)
+    private static Item MapToItem(ItemDetails itemDetails)
     {
-        var content = contentSource.ToImmutableArray(); // read and save content
-        var result = content.Select(bagMachine =>
-        {
-            var items = bagMachine.Items.Select(bagItem =>
-            {
-                var bagItemContent = new BagItemContent(bagItem.Id, bagItem.ExternalId, bagItem.Count);
-                return bagItemContent;
-            });
-            var bagMachineContent = new BagMachineContent(bagMachine.Id, bagMachine.ExternalId, items);
-            return bagMachineContent;
-        });
-        return result;
+        var item = new Item(itemDetails.Name, itemDetails.Description, itemDetails.PhotoLink);
+        return item;
     }
-
-    private static IEnumerable<MachineItemsQuery> BuildQueryObject(IEnumerable<BagMachineContent> content)
-    {
-        var queryObject = content.Select(machine =>
-        {
-            var itemsIds = machine.Items.Select(i => i.ExternalId);
-            var machineItemsQuery = new MachineItemsQuery(machine.ExternalId, itemsIds);
-            return machineItemsQuery;
-        });
-        return queryObject;
-    }
-
-    private static MachineInfo Map(Clients.Vending.Dtos.MachineInfo machineInfo)
-    {
-        var result = new MachineInfo(machineInfo.Description, machineInfo.Address);
-        return result;
-    }
-
-    private static ItemInfo Map(Clients.Vending.Dtos.ItemInfo itemInfo)
-    {
-        var result = new ItemInfo(itemInfo.Name, itemInfo.Description, itemInfo.PhotoLink);
-        return result;
-    }
-}
-
-public record BagMachineContent
-{
-    public BagMachineContent(Guid id, string externalId, IEnumerable<BagItemContent> items)
-    {
-        Id = id;
-        ExternalId = externalId;
-        Items = Array.AsReadOnly(items.ToArray());
-    }
-
-    public Guid Id { get; }
-    public string ExternalId { get; }
-    public IReadOnlyCollection<BagItemContent> Items { get; }
-}
-
-public record BagItemContent
-{
-    public BagItemContent(Guid id, string externalId, int count)
-    {
-        Id = id;
-        ExternalId = externalId;
-        Count = count;
-    }
-
-    public Guid Id { get; }
-    public string ExternalId { get; }
-    public int Count { get; }
 }

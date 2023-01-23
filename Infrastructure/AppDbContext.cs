@@ -3,72 +3,78 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
-public class AppDbContext : DbContext
+public sealed class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
         var r = Database.EnsureCreated();
     }
 
-    public DbSet<BagMachine> BagMachines { get; set; } = null!;
+    public DbSet<BagSection> BagSections { get; set; } = null!;
 
-    public DbSet<BagItem> BagItems { get; set; } = null!;
+    public DbSet<BagContent> BagContents { get; set; } = null!;
+
+    public DbSet<Order> Orders { get; set; } = null!;
+
+    public DbSet<OrderPickupPoint> OrderPickupPoints { get; set; } = null!;
+
+    public DbSet<OrderContent> OrderContents { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        var bagMachines = new BagMachine[]
+        var bagMachines = new BagSection[]
         {
-            new BagMachine
+            new BagSection
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "m1"
+                PickupPointId = "m1"
             },
-            new BagMachine
+            new BagSection
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "m2"
+                PickupPointId = "m2"
             },
         };
-        builder.Entity<BagMachine>().HasData(bagMachines);
+        builder.Entity<BagSection>().HasData(bagMachines);
 
-        var bagItems = new BagItem[]
+        var bagItems = new BagContent[]
         {
-            new BagItem
+            new BagContent
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "i1",
+                ItemId = "i1",
                 Count = 1,
-                BagMachineId = bagMachines[0].Id
+                BagSectionId = bagMachines[0].Id
             },
-            new BagItem
+            new BagContent
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "i2",
+                ItemId = "i2",
                 Count = 3,
-                BagMachineId = bagMachines[0].Id
+                BagSectionId = bagMachines[0].Id
             },
-            new BagItem
+            new BagContent
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "i3",
+                ItemId = "i3",
                 Count = 2,
-                BagMachineId = bagMachines[0].Id
+                BagSectionId = bagMachines[0].Id
             },
-            new BagItem
+            new BagContent
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "i1",
+                ItemId = "i1",
                 Count = 5,
-                BagMachineId = bagMachines[1].Id
+                BagSectionId = bagMachines[1].Id
             },
-            new BagItem
+            new BagContent
             {
                 Id = Guid.NewGuid(),
-                ExternalId = "i2",
+                ItemId = "i2",
                 Count = 2,
-                BagMachineId = bagMachines[1].Id
+                BagSectionId = bagMachines[1].Id
             }
         };
-        builder.Entity<BagItem>().HasData(bagItems);
+        builder.Entity<BagContent>().HasData(bagItems);
     }
 }

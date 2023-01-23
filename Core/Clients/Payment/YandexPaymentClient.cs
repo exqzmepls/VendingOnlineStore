@@ -1,4 +1,5 @@
 ﻿using Yandex.Checkout.V3;
+using PaymentObject = Yandex.Checkout.V3.Payment;
 
 namespace Core.Clients.Payment;
 
@@ -12,28 +13,9 @@ public class YandexPaymentClient : IPaymentClient
         _client = client.MakeAsync();
     }
 
-    public async Task<string> CreatePayment()
-    {
-        var newPayment = new NewPayment
-        {
-            Description = "Test payment",
-            Capture = true,
-            Amount = new Amount
-            {
-                Value = 100,
-                Currency = "RUB"
-            },
-            Confirmation = new Confirmation
-            {
-                Type = ConfirmationType.Redirect,
-                ReturnUrl = "https://localhost:7128"
-            }
-        };
-        var payment = await _client.CreatePaymentAsync(newPayment);
-        return payment.Confirmation.ConfirmationUrl;
-    }
+    public Task<PaymentDetails> CreatePaymentAsync() => CreatePaymentAsync(100);
 
-    public async Task<string> CreatePayment(decimal price)
+    public async Task<PaymentDetails> CreatePaymentAsync(decimal price)
     {
         var newPayment = new NewPayment
         {
@@ -51,6 +33,14 @@ public class YandexPaymentClient : IPaymentClient
             }
         };
         var payment = await _client.CreatePaymentAsync(newPayment);
-        return payment.Confirmation.ConfirmationUrl;
+
+        var result = MapToPaymentDetails(payment);
+        return result;
+    }
+
+    private static PaymentDetails MapToPaymentDetails(PaymentObject payment)
+    {
+        var paymentDetails = new PaymentDetails(payment.Id, payment.Confirmation.ConfirmationUrl);
+        return paymentDetails;
     }
 }

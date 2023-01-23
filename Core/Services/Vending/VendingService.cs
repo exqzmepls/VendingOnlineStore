@@ -1,6 +1,8 @@
 ﻿using Core.Clients.Geo;
 using Core.Clients.Vending;
 using Core.Services.Vending.Dtos;
+using Item = Core.Services.Vending.Dtos.Item;
+using ItemMachine = Core.Services.Vending.Dtos.ItemMachine;
 
 namespace Core.Services.Vending;
 
@@ -17,7 +19,7 @@ public class VendingService : IVendingService
 
     public async Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId)
     {
-        var receivedMachines = await _vendingClient.GetItemMachinesAsync(itemId);
+        var receivedMachines = await _vendingClient.GetItemPickupPointsAsync(itemId);
         var machines = receivedMachines.Select(m =>
         {
             var distance = _geoClient.GetDistance(m.Latitude, m.Longitude);
@@ -41,7 +43,7 @@ public class VendingService : IVendingService
 
     public async Task<IEnumerable<VendingMachine>> GetMachinesAsync()
     {
-        var receivedMachines = await _vendingClient.GetMachinesAsync();
+        var receivedMachines = await _vendingClient.GetPickupPointsAsync();
         var machines = receivedMachines.Select(m =>
         {
             var distance = _geoClient.GetDistance(m.Latitude, m.Longitude);
@@ -53,7 +55,7 @@ public class VendingService : IVendingService
 
     public async Task<IEnumerable<MachineSlot>> GetMachineSlotsAsync(string machineId)
     {
-        var receivedSlots = await _vendingClient.GetMachineSlotsAsync(machineId);
+        var receivedSlots = await _vendingClient.GetPickupPointSlotsAsync(machineId);
         var slots = receivedSlots.Select(s =>
         {
             var item = s.Item;
@@ -62,6 +64,4 @@ public class VendingService : IVendingService
         });
         return slots;
     }
-
-
 }

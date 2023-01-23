@@ -1,6 +1,5 @@
 ﻿using Core.Clients.Payment;
 using Core.Services.Bag;
-using Core.Services.Bag.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Bag;
 
@@ -20,87 +19,90 @@ public class BagController : Controller
     [HttpGet]
     public async Task<IActionResult> IndexAsync()
     {
-        var model = await GetContentModelAsync();
+        var model = await GetBagSectionsViewModelsAsync();
         return View(model);
     }
 
     [HttpPost]
     public async Task<IActionResult> IncreaseItemCountAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.IncreaseItemCountAsync(itemId);
+        var isSuccess = await _bagService.IncreaseContentCountAsync(itemId);
         if (!isSuccess)
         {
             return BadRequest();
         }
 
-        var partialView = await GetContentPartialViewAsync();
+        var partialView = await GetBagSectionsPartialViewAsync();
         return partialView;
     }
 
     [HttpPost]
     public async Task<IActionResult> DecreaseItemCountAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.DecreaseItemCountAsync(itemId);
+        var isSuccess = await _bagService.DecreaseContentCountAsync(itemId);
         if (!isSuccess)
         {
             return BadRequest();
         }
 
-        var partialView = await GetContentPartialViewAsync();
+        var partialView = await GetBagSectionsPartialViewAsync();
         return partialView;
     }
 
     [HttpPost]
     public async Task<IActionResult> RemoveItemAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.RemoveItemAsync(itemId);
+        var isSuccess = await _bagService.RemoveContentAsync(itemId);
         if (!isSuccess)
         {
             return BadRequest();
         }
 
-        var partialView = await GetContentPartialViewAsync();
+        var partialView = await GetBagSectionsPartialViewAsync();
         return partialView;
     }
 
+    [Obsolete("Relocation needed")]
     public async Task<IActionResult> Buy(string id)
     {
-        var url = await _paymentClient.CreatePayment();
-        return Redirect(url);
+        var paymentDetails = await _paymentClient.CreatePaymentAsync();
+        return Redirect(paymentDetails.Link);
     }
 
+    [Obsolete("Relocation needed")]
     public async Task<IActionResult> BuyItem(decimal price)
     {
-        var url = await _paymentClient.CreatePayment(price);
-        return Redirect(url);
+        var paymentDetails = await _paymentClient.CreatePaymentAsync(price);
+        return Redirect(paymentDetails.Link);
     }
 
-    private static BagMachineViewModel Map(BagMachine bagMachine)
+    private static BagSectionViewModel MapToBagSectionViewModel(BagSection bagSection)
     {
-        var machineInfo = bagMachine.MachineInfo;
-        var items = bagMachine.MachineItems.Select(Map);
-        var bagMachineViewModel = new BagMachineViewModel(bagMachine.Id, machineInfo.Description, machineInfo.Address, items, bagMachine.TotalPrice);
+        var pickupPoint = bagSection.PickupPoint;
+        var items = bagSection.Contents.Select(MapToBagContentViewModel);
+        var bagMachineViewModel = new BagSectionViewModel(bagSection.Id, pickupPoint.Description, pickupPoint.Address,
+            items, bagSection.TotalPrice);
         return bagMachineViewModel;
     }
 
-    private static BagItemViewModel Map(BagItem bagItem)
+    private static BagContentViewModel MapToBagContentViewModel(BagContent bagContent)
     {
-        var itemInfo = bagItem.ItemInfo;
-        var machineItemInfo = bagItem.MachineItemInfo;
-        var bagItemViewModel = new BagItemViewModel(bagItem.Id, itemInfo.Name, itemInfo.Description, itemInfo.PhotoLink, machineItemInfo.AvailableCount, machineItemInfo.Price, bagItem.Count, bagItem.TotalPrice);
+        var item = bagContent.Item;
+        var bagItemViewModel = new BagContentViewModel(bagContent.Id, item.Name, item.Description, item.PhotoLink,
+            bagContent.AvailableCount, bagContent.Price, bagContent.Count, bagContent.TotalPrice);
         return bagItemViewModel;
     }
 
-    private async Task<PartialViewResult> GetContentPartialViewAsync()
+    private async Task<PartialViewResult> GetBagSectionsPartialViewAsync()
     {
-        var model = await GetContentModelAsync();
-        return PartialView("_BagContent", model);
+        var model = await GetBagSectionsViewModelsAsync();
+        return PartialView("_BagSections", model);
     }
 
-    private async Task<IEnumerable<BagMachineViewModel>> GetContentModelAsync()
+    private async Task<IEnumerable<BagSectionViewModel>> GetBagSectionsViewModelsAsync()
     {
-        var content = await _bagService.GetContentAsync();
-        var model = content.Select(Map);
+        var content = await _bagService.GetSectionsAsync();
+        var model = content.Select(MapToBagSectionViewModel);
         return model;
     }
 }

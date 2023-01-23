@@ -2,7 +2,9 @@
 
 public interface IPaymentClient
 {
-    public Task<string> CreatePayment();
+    public Task<PaymentDetails> CreatePaymentAsync();
 
-    public Task<string> CreatePayment(decimal price);
+    public Task<PaymentDetails> CreatePaymentAsync(decimal price);
 }
+
+public record PaymentDetails(string Id, string Link);
