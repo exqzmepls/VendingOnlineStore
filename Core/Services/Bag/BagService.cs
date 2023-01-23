@@ -1,5 +1,14 @@
 ﻿using System.Collections.Immutable;
+using Core.Clients.Vending;
+using Core.Clients.Vending.Dtos;
+using Core.Repositories.BagItem;
+using Core.Repositories.BagItem.Dtos;
+using Core.Repositories.BagMachine;
+using Core.Repositories.BagMachine.Dtos;
 using Core.Services.Bag.Dtos;
+using ItemInfo = Core.Services.Bag.Dtos.ItemInfo;
+using MachineInfo = Core.Services.Bag.Dtos.MachineInfo;
+using MachineItemInfo = Core.Services.Bag.Dtos.MachineItemInfo;
 
 namespace Core.Services.Bag;
 

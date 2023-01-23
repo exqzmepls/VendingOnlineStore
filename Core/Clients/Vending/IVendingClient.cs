@@ -17,4 +17,10 @@ public interface IVendingClient
     public Task<IEnumerable<ItemMachine>> GetItemMachinesAsync(string itemId);
 
     public Task<IEnumerable<MachineItemsInfo>> GetMachinesItemsInfoAsync(IEnumerable<MachineItemsQuery> machineItems);
+
+    public Task<string> CreateBookingAsync(string pickupPointId, IEnumerable<ItemInfo> content);
+
+    public Task<ObtainingDetails> ConfirmBookingAsync(string bookingId);
+
+    public Task DropBookingAsync(string bookingId);
 }

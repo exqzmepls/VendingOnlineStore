@@ -1,4 +1,6 @@
-﻿using Core.Services.Vending.Dtos;
+﻿using Core.Clients.Geo;
+using Core.Clients.Vending;
+using Core.Services.Vending.Dtos;
 
 namespace Core.Services.Vending;
 
