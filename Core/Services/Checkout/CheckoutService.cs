@@ -1,4 +1,4 @@
-﻿using Core.Clients.Vending;
+﻿using Core.Clients.PickupPoint;
 using Core.Extensions;
 using Core.Repositories.BagSection;
 
@@ -7,12 +7,12 @@ namespace Core.Services.Checkout;
 public class CheckoutService : ICheckoutService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
-    private readonly IVendingClient _vendingClient;
+    private readonly IPickupPointClient _pickupPointClient;
 
-    public CheckoutService(IBagSectionRepository bagSectionRepository, IVendingClient vendingClient)
+    public CheckoutService(IBagSectionRepository bagSectionRepository, IPickupPointClient pickupPointClient)
     {
         _bagSectionRepository = bagSectionRepository;
-        _vendingClient = vendingClient;
+        _pickupPointClient = pickupPointClient;
     }
 
     public async Task<CheckoutDetails?> GetCheckoutOrDefaultAsync(Guid bagSectionId)
@@ -27,7 +27,7 @@ public class CheckoutService : ICheckoutService
         // get price and available count
         var itemsIds = bagSectionData.Contents.Select(bagContentData => bagContentData.ItemId);
         var specification = new PickupPointContentsSpecification(bagSectionData.PickupPointId, itemsIds);
-        var pickupPointPresentation = await _vendingClient.GetPickupPointPresentationAsync(specification);
+        var pickupPointPresentation = await _pickupPointClient.GetPresentationAsync(specification);
 
         // staff to validate
         var pickupPoint = pickupPointPresentation.PickupPoint;

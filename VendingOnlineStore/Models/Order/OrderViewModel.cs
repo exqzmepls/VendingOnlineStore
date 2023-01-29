@@ -2,7 +2,7 @@
 
 public class OrderViewModel
 {
-    public OrderViewModel(Guid id, DateTime creationDateUtc, string status)
+    public OrderViewModel(Guid id, DateTime creationDateUtc, OrderStatus status)
     {
         Id = id;
         CreationDateUtc = creationDateUtc;
@@ -11,5 +11,5 @@ public class OrderViewModel
 
     public Guid Id { get; }
     public DateTime CreationDateUtc { get; }
-    public string Status { get; }
+    public OrderStatus Status { get; }
 }

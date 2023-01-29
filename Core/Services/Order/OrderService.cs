@@ -1,5 +1,5 @@
-﻿using Core.Clients.Payment;
-using Core.Clients.Vending;
+﻿using Core.Clients.Booking;
+using Core.Clients.Payment;
 using Core.Extensions;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
@@ -13,15 +13,15 @@ public class OrderService : IOrderService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IOrderRepository _orderRepository;
-    private readonly IVendingClient _vendingClient;
+    private readonly IBookingClient _bookingClient;
     private readonly IPaymentClient _paymentClient;
 
     public OrderService(IBagSectionRepository bagSectionRepository, IOrderRepository orderRepository,
-        IVendingClient vendingClient, IPaymentClient paymentClient)
+        IBookingClient bookingClient, IPaymentClient paymentClient)
     {
         _bagSectionRepository = bagSectionRepository;
         _orderRepository = orderRepository;
-        _vendingClient = vendingClient;
+        _bookingClient = bookingClient;
         _paymentClient = paymentClient;
     }
 
@@ -37,7 +37,9 @@ public class OrderService : IOrderService
 
     public IQueryable<OrderBrief> GetAll()
     {
-        var result = _orderRepository.GetAll().Select(o => MapToOrderBrief(o));
+        var result = _orderRepository.GetAll()
+            //.OrderByDescending(o => o.BookingId)
+            .Select(o => MapToOrderBrief(o));
         return result;
     }
 
@@ -54,7 +56,7 @@ public class OrderService : IOrderService
         var newBooking = new NewBooking(bagSectionData.PickupPointId, newBookingContents);
 
         // request to buy
-        var bookingDetails = await _vendingClient.CreateBookingAsync(newBooking);
+        var bookingDetails = await _bookingClient.CreateBookingAsync(newBooking);
         var bookingContents = bookingDetails.Contents;
 
         // validate response
@@ -92,13 +94,15 @@ public class OrderService : IOrderService
 
     private static OrderDetails MapToOrderDetails(OrderDetailsData orderData)
     {
+        var status = MapToOrderStatus(orderData.Status);
         var orderPickupPoint = MapToOrderPickupPoint(orderData.PickupPoint);
         var orderContents = orderData.Contents.Select(MapToOrderContent).ToReadOnlyCollection();
         var orderDetails = new OrderDetails(
             orderData.Id,
             orderData.CreationDateUtc,
-            orderData.Status.ToString(),
+            status,
             orderData.Payment.Link,
+            orderData.ReleaseCode,
             orderPickupPoint,
             orderContents,
             orderData.TotalPrice
@@ -129,7 +133,8 @@ public class OrderService : IOrderService
 
     private static OrderBrief MapToOrderBrief(OrderBriefData orderData)
     {
-        var orderBrief = new OrderBrief(orderData.Id, orderData.CreationDateUtc, orderData.Status.ToString());
+        var status = MapToOrderStatus(orderData.Status);
+        var orderBrief = new OrderBrief(orderData.Id, orderData.CreationDateUtc, status);
         return orderBrief;
     }
 
@@ -145,6 +150,19 @@ public class OrderService : IOrderService
     {
         var totalSum = contents.Sum(c => c.Count * c.Price);
         return totalSum;
+    }
+
+    private static OrderStatus MapToOrderStatus(Status status)
+    {
+        return status switch
+        {
+            Status.WaitingPayment => OrderStatus.WaitingPayment,
+            Status.WaitingReceiving => OrderStatus.WaitingReceiving,
+            Status.PaymentOverdue => OrderStatus.PaymentOverdue,
+            Status.Received => OrderStatus.Received,
+            Status.ReceivingOverdue => OrderStatus.ReceivingOverdue,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
     }
 
     private async Task<BagSectionDetails> GetBagSectionDataAsync(Guid bagSectionId)

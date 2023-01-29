@@ -1,6 +1,7 @@
 ﻿using Core.Extensions;
 using Infrastructure;
 using Infrastructure.Models;
+using Microsoft.EntityFrameworkCore;
 using OrderEntity = Infrastructure.Models.Order;
 
 namespace Core.Repositories.Order;
@@ -16,7 +17,9 @@ public class OrderRepository : IOrderRepository
 
     public IQueryable<OrderBrief> GetAll()
     {
-        var result = _appDbContext.Orders.Select(o => MapToOrderBrief(o));
+        var result = _appDbContext.Orders
+            .Include(o => o.Payment)
+            .Select(o => MapToOrderBrief(o));
         return result;
     }
 
@@ -42,13 +45,37 @@ public class OrderRepository : IOrderRepository
         return entry.Entity.Id;
     }
 
+    public void Update(Guid id, OrderUpdate orderUpdate)
+    {
+        var order = _appDbContext.Orders.Find(id);
+        if (order == default)
+            throw new OrderDoesNotExistException();
+
+        if (orderUpdate.NewStatus != default)
+            order.Status = MapToOrderStatus(orderUpdate.NewStatus.Value);
+
+        if (orderUpdate.ReleaseCode != default)
+            order.ReleaseCode = orderUpdate.ReleaseCode;
+
+        try
+        {
+            _appDbContext.SaveChanges();
+        }
+        catch (Exception exception)
+        {
+            throw new DbException("Order update exception", exception);
+        }
+    }
+
     private static OrderBrief MapToOrderBrief(OrderEntity order)
     {
         var status = MapToStatus(order.Status);
         var orderBrief = new OrderBrief(
             order.Id,
             order.CreationDateUtc,
-            status
+            status,
+            order.Payment!.ExternalId,
+            order.BookingId
         );
         return orderBrief;
     }
@@ -118,6 +145,7 @@ public class OrderRepository : IOrderRepository
             order.BookingId,
             status,
             payment,
+            order.ReleaseCode,
             pickupPoint,
             contents,
             order.TotalPrice
@@ -167,6 +195,19 @@ public class OrderRepository : IOrderRepository
             OrderStatus.Received => Status.Received,
             OrderStatus.ReceivingOverdue => Status.ReceivingOverdue,
             _ => throw new ArgumentOutOfRangeException(nameof(orderStatus), orderStatus, null)
+        };
+    }
+
+    private static OrderStatus MapToOrderStatus(Status status)
+    {
+        return status switch
+        {
+            Status.WaitingPayment => OrderStatus.WaitingPayment,
+            Status.WaitingReceiving => OrderStatus.WaitingReceiving,
+            Status.PaymentOverdue => OrderStatus.PaymentOverdue,
+            Status.Received => OrderStatus.Received,
+            Status.ReceivingOverdue => OrderStatus.ReceivingOverdue,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
         };
     }
 }

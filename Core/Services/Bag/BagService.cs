@@ -1,8 +1,10 @@
 ﻿using System.Collections.Immutable;
-using Core.Clients.Vending;
+using Core.Clients.PickupPoint;
 using Core.Extensions;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
+using PickupPointData = Core.Clients.PickupPoint.PickupPoint;
+using ItemData = Core.Clients.PickupPoint.Item;
 
 namespace Core.Services.Bag;
 
@@ -10,14 +12,14 @@ public class BagService : IBagService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IBagContentRepository _bagContentRepository;
-    private readonly IVendingClient _vendingClient;
+    private readonly IPickupPointClient _pickupPointClient;
 
     public BagService(IBagSectionRepository bagSectionRepository, IBagContentRepository bagContentRepository,
-        IVendingClient vendingClient)
+        IPickupPointClient pickupPointClient)
     {
         _bagSectionRepository = bagSectionRepository;
         _bagContentRepository = bagContentRepository;
-        _vendingClient = vendingClient;
+        _pickupPointClient = pickupPointClient;
     }
 
     public async Task<bool> DecreaseContentCountAsync(Guid contentId)
@@ -58,7 +60,7 @@ public class BagService : IBagService
             var specification = new PickupPointContentsSpecification(bagSectionData.PickupPointId, itemsIds);
             return specification;
         });
-        var pickupPointsPresentations = await _vendingClient.GetPickupPointsPresentationsAsync(specifications);
+        var pickupPointsPresentations = await _pickupPointClient.GetPresentationsAsync(specifications);
 
         var bagSections = bagSectionsData.Select(bagSectionData =>
             {
@@ -132,7 +134,7 @@ public class BagService : IBagService
     }
 
     private static BagContent GetBagContentFromPickupPointContents(BagContentBrief bagContentData,
-        IEnumerable<ContentDetails> pickupPointContents)
+        IEnumerable<PickupPointContent> pickupPointContents)
     {
         var itemId = bagContentData.ItemId;
         var (itemDetails, availableCount, price) = pickupPointContents.Single(c => c.Item.Id == itemId);
@@ -145,15 +147,15 @@ public class BagService : IBagService
         return bagContent;
     }
 
-    private static PickupPoint MapToPickupPoint(PickupPointDetails pickupPointDetails)
+    private static PickupPoint MapToPickupPoint(PickupPointData pickupPointData)
     {
-        var pickupPoint = new PickupPoint(pickupPointDetails.Description, pickupPointDetails.Address);
+        var pickupPoint = new PickupPoint(pickupPointData.Description, pickupPointData.Address);
         return pickupPoint;
     }
 
-    private static Item MapToItem(ItemDetails itemDetails)
+    private static Item MapToItem(ItemData itemData)
     {
-        var item = new Item(itemDetails.Name, itemDetails.Description, itemDetails.PhotoLink);
+        var item = new Item(itemData.Name, itemData.Description, itemData.PhotoLink);
         return item;
     }
 }

@@ -1,5 +1,7 @@
+using Core.Clients.Booking;
 using Core.Clients.Geo;
 using Core.Clients.Payment;
+using Core.Clients.PickupPoint;
 using Core.Clients.Vending;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
@@ -21,6 +23,8 @@ services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSt
 
 // clients
 services.AddSingleton<IVendingClient, DummyVendingClient>();
+services.AddSingleton<IPickupPointClient, DummyPickupPointClient>();
+services.AddSingleton<IBookingClient, DummyBookingClient>();
 services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 services.AddScoped<IGeoClient, GeoClient>();
 
