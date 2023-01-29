@@ -6,7 +6,7 @@ public interface IBookingClient
 
     public Task DropBookingAsync(string bookingId);
 
-    public Task ConfirmBookingAsync(string bookingId);
+    public Task<int> ApproveBookingAsync(string bookingId);
 }
 
 public record BookingDetails(string Id, PickupPoint PickupPoint, IReadOnlyCollection<BookingContent> Contents);

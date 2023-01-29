@@ -25,13 +25,14 @@ public class DummyBookingClient : IBookingClient
         return booking;
     }
 
-    public Task DropBookingAsync(string bookingId)
+    public async Task DropBookingAsync(string bookingId)
     {
-        throw new NotImplementedException();
+        await Task.Delay(35);
     }
 
-    public Task ConfirmBookingAsync(string bookingId)
+    public async Task<int> ApproveBookingAsync(string bookingId)
     {
-        throw new NotImplementedException();
+        await Task.Delay(35);
+        return Random.Shared.Next(1000, 10000);
     }
 }

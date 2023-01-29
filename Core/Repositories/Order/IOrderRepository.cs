@@ -14,7 +14,7 @@ public interface IOrderRepository
 public record OrderBrief(Guid Id, DateTime CreationDateUtc, Status Status, string PaymentId, string BookingId);
 
 public record OrderDetails(Guid Id, DateTime CreationDateUtc, string BookingId, Status Status, PaymentInfo Payment,
-    PickupPointInfo PickupPoint, IReadOnlyCollection<ContentInfo> Contents, decimal TotalPrice);
+    int? ReleaseCode, PickupPointInfo PickupPoint, IReadOnlyCollection<ContentInfo> Contents, decimal TotalPrice);
 
 public enum Status
 {
@@ -34,4 +34,4 @@ public record PickupPointInfo(string Id, string Address, string Description);
 
 public record ContentInfo(string Id, string Name, string Description, string PhotoLink, int Count, decimal Price);
 
-public record OrderUpdate(Status NewStatus);
+public record OrderUpdate(Status? NewStatus, int? ReleaseCode);

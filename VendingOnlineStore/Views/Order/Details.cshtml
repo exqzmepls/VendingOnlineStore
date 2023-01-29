@@ -21,12 +21,35 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreationDateUtc)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PaymentLink)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PaymentLink)
-        </dd>
+
+        @switch (Model.Status)
+        {
+            case OrderStatus.WaitingPayment:
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.PaymentLink)
+                </dt>
+                <dd class="col-sm-10">
+                    <a class="btn btn-primary" href="@Model.PaymentLink">Pay</a>
+                </dd>
+                break;
+            case OrderStatus.WaitingReceiving:
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.ReleaseCode)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.ReleaseCode)
+                </dd>
+                break;
+            case OrderStatus.PaymentOverdue:
+                break;
+            case OrderStatus.Received:
+                break;
+            case OrderStatus.ReceivingOverdue:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.PickupPoint.Address)
         </dt>

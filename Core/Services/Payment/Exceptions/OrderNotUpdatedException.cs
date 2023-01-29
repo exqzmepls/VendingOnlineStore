@@ -1,4 +1,4 @@
-namespace Core.Services.Payment;
+namespace Core.Services.Payment.Exceptions;
 
 public class OrderNotUpdatedException : Exception
 {

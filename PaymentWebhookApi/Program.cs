@@ -1,9 +1,13 @@
+using Core.Clients.Booking;
+using Core.Repositories.Order;
 using Core.Services.Payment;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
+services.AddSingleton<IBookingClient, DummyBookingClient>();
+services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IPaymentService, PaymentService>();
 
 services.AddControllers();

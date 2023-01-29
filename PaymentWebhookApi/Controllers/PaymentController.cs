@@ -27,9 +27,9 @@ public class PaymentController : ControllerBase
             _logger.LogInformation("Webhook notification ({EventName} for payment {PaymentId})", eventName, paymentId);
             _paymentService.ProcessEventAsync(eventName, paymentId);
         }
-        catch
+        catch (Exception exception)
         {
-            _logger.LogInformation("Webhook error");
+            _logger.LogError(exception, "notification error");
             return BadRequest();
         }
 

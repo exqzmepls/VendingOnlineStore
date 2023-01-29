@@ -2,6 +2,8 @@
 using Core.Services.Order;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Order;
+using OrderStatus = VendingOnlineStore.Models.Order.OrderStatus;
+using Status = Core.Services.Order.OrderStatus;
 
 namespace VendingOnlineStore.Controllers;
 
@@ -43,16 +45,25 @@ public class OrderController : Controller
 
     private static OrderViewModel MapToOrderViewModel(OrderBrief order)
     {
-        var orderViewModel = new OrderViewModel(order.Id, order.CreationDateUtc, order.Status);
+        var orderStatus = MapToOrderStatus(order.Status);
+        var orderViewModel = new OrderViewModel(order.Id, order.CreationDateUtc, orderStatus);
         return orderViewModel;
     }
 
     private static OrderDetailsViewModel MapToOrderDetailsViewModel(OrderDetails orderDetails)
     {
+        var orderStatus = MapToOrderStatus(orderDetails.Status);
         var pickupPointViewModel = MapToOrderPickupPointViewModel(orderDetails.PickupPoint);
         var orderContentsViewModels = orderDetails.Contents.Select(MapToOrderContentViewModel);
-        var orderDetailsViewModel = new OrderDetailsViewModel(orderDetails.CreationDateUtc, orderDetails.Status,
-            orderDetails.PaymentLink, pickupPointViewModel, orderContentsViewModels, orderDetails.TotalPrice);
+        var orderDetailsViewModel = new OrderDetailsViewModel(
+            orderDetails.CreationDateUtc,
+            orderStatus,
+            orderDetails.PaymentLink,
+            orderDetails.ReleaseCode,
+            pickupPointViewModel,
+            orderContentsViewModels,
+            orderDetails.TotalPrice
+        );
         return orderDetailsViewModel;
     }
 
@@ -81,5 +92,18 @@ public class OrderController : Controller
     {
         return new NewOrder(newOrderModel.BagSectionId,
             newOrderModel.Contents.Select(c => new NewOrderContent(c.BagContentId, c.Count)).ToReadOnlyCollection());
+    }
+
+    private static OrderStatus MapToOrderStatus(Status status)
+    {
+        return status switch
+        {
+            Status.WaitingPayment => OrderStatus.WaitingPayment,
+            Status.WaitingReceiving => OrderStatus.WaitingReceiving,
+            Status.PaymentOverdue => OrderStatus.PaymentOverdue,
+            Status.Received => OrderStatus.Received,
+            Status.ReceivingOverdue => OrderStatus.ReceivingOverdue,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
     }
 }

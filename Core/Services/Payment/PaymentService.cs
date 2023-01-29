@@ -1,5 +1,6 @@
 using Core.Clients.Booking;
 using Core.Repositories.Order;
+using Core.Services.Payment.Exceptions;
 using Microsoft.Extensions.Logging;
 
 namespace Core.Services.Payment;
@@ -22,29 +23,51 @@ public class PaymentService : IPaymentService
     {
         switch (eventName)
         {
-            case "1":
-                Succeeded(paymentId);
+            case "payment.succeeded":
+                OnSucceeded(paymentId);
                 break;
-            case "2":
-                await CanceledAsync(paymentId);
+            case "payment.canceled":
+                await OnCanceledAsync(paymentId);
                 break;
-            case "3":
-                await WaitingForCaptureAsync(paymentId);
+            case "payment.waiting_for_capture":
+                await OnWaitingForCaptureAsync(paymentId);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(eventName));
         }
     }
 
-    private void Succeeded(string paymentId)
+    private void OnSucceeded(string paymentId)
     {
         _logger.LogInformation("Payment {PaymentId} succeeded", paymentId);
     }
 
-    private async Task CanceledAsync(string paymentId)
+    private async Task OnCanceledAsync(string paymentId)
     {
         var order = GetOrderByPaymentId(paymentId);
 
+        await DropOrderBookingAsync(order);
+
+        MakeOrderCanceled(order);
+    }
+
+    private async Task OnWaitingForCaptureAsync(string paymentId)
+    {
+        var order = GetOrderByPaymentId(paymentId);
+
+        var releaseCode = await ApproveOrderBookingAsync(order);
+
+        MakeOrderReleaseReady(order, releaseCode);
+    }
+
+    private OrderBrief GetOrderByPaymentId(string paymentId)
+    {
+        var order = _orderRepository.GetAll().SingleOrDefault(o => o.PaymentId == paymentId);
+        return order ?? throw new OrderNotFoundException($"Order with Payment Id = {paymentId}");
+    }
+
+    private async Task DropOrderBookingAsync(OrderBrief order)
+    {
         var bookingId = order.BookingId;
         try
         {
@@ -54,31 +77,44 @@ public class PaymentService : IPaymentService
         {
             throw new BookingNotDropException($"Booking Id = {bookingId}", exception);
         }
+    }
 
+    private void MakeOrderCanceled(OrderBrief order)
+    {
+        var orderUpdate = new OrderUpdate(Status.PaymentOverdue, default);
+        UpdateOrder(order, orderUpdate);
+    }
+
+    private async Task<int> ApproveOrderBookingAsync(OrderBrief order)
+    {
+        var bookingId = order.BookingId;
         try
         {
-            var orderUpdate = new OrderUpdate(Status.PaymentOverdue);
-            _orderRepository.Update(order.Id, orderUpdate);
+            var releaseCode = await _bookingClient.ApproveBookingAsync(bookingId);
+            return releaseCode;
         }
         catch (Exception exception)
         {
-            throw new OrderNotUpdatedException("", exception);
+            throw new BookingNotApprovedException($"Booking Id = {bookingId}", exception);
         }
     }
 
-    private async Task WaitingForCaptureAsync(string paymentId)
+    private void MakeOrderReleaseReady(OrderBrief order, int releaseCode)
     {
-        var order = GetOrderByPaymentId(paymentId);
-
-        await _bookingClient.ConfirmBookingAsync(order.BookingId);
-
-        var orderUpdate = new OrderUpdate(Status.WaitingReceiving);
-        _orderRepository.Update(order.Id, orderUpdate);
+        var orderUpdate = new OrderUpdate(Status.WaitingPayment, releaseCode);
+        UpdateOrder(order, orderUpdate);
     }
 
-    private OrderBrief GetOrderByPaymentId(string paymentId)
+    private void UpdateOrder(OrderBrief order, OrderUpdate update)
     {
-        var order = _orderRepository.GetAll().SingleOrDefault(o => o.PaymentId == paymentId);
-        return order ?? throw new OrderNotFoundException($"Order with Payment Id = {paymentId}");
+        var orderId = order.Id;
+        try
+        {
+            _orderRepository.Update(orderId, update);
+        }
+        catch (Exception exception)
+        {
+            throw new OrderNotUpdatedException($"Order Id = {orderId}", exception);
+        }
     }
 }

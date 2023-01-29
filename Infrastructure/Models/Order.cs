@@ -12,6 +12,8 @@ public class Order
 
     public decimal TotalPrice { get; set; }
 
+    public int? ReleaseCode { get; set; }
+
     public Payment? Payment { get; set; }
 
     public OrderPickupPoint? OrderPickupPoint { get; set; }
