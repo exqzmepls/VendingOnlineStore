@@ -9,18 +9,51 @@ public interface IOrderService
     public OrderDetails? GetByIdOrDefault(Guid id);
 }
 
-public record OrderBrief(Guid Id, DateTime CreationDateUtc, OrderStatus Status);
+public record OrderBrief
+{
+    public required Guid Id { get; init; }
+    public required DateTime CreationDateUtc { get; init; }
+    public required OrderStatus Status { get; init; }
+}
 
-public record OrderDetails(Guid Id, DateTime CreationDateUtc, OrderStatus Status, string PaymentLink, int? ReleaseCode,
-    OrderPickupPoint PickupPoint, IReadOnlyCollection<OrderContent> Contents, decimal TotalPrice);
+public record OrderDetails
+{
+    public required Guid Id { get; init; }
+    public required DateTime CreationDateUtc { get; init; }
+    public required OrderStatus Status { get; init; }
+    public required string PaymentLink { get; init; }
+    public required int? ReleaseCode { get; init; }
+    public required OrderPickupPoint PickupPoint { get; init; }
+    public required IReadOnlyCollection<OrderContent> Contents { get; init; }
+    public required decimal TotalPrice { get; init; }
+}
 
-public record OrderPickupPoint(string Address, string Description);
+public record OrderPickupPoint
+{
+    public required string Address { get; init; }
+    public required string Description { get; init; }
+}
 
-public record OrderContent(string Name, string Description, string PhotoLink, int Count, decimal Price);
+public record OrderContent
+{
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required string PhotoLink { get; init; }
+    public required int Count { get; init; }
+    public required decimal Price { get; init; }
+}
 
-public record NewOrder(Guid BagSectionId, IReadOnlyCollection<NewOrderContent> Contents);
+public record NewOrder
+{
+    public required Guid BagSectionId { get; init; }
+    public required IReadOnlyCollection<NewOrderContent> Contents { get; init; }
+}
 
-public record NewOrderContent(Guid BagContentId, int Count);
+public record NewOrderContent
+{
+    public required Guid BagContentId { get; init; }
+    public required int Count { get; init; }
+}
 
 public enum OrderStatus
 {
