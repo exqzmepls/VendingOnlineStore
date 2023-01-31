@@ -2,21 +2,38 @@
 
 public interface IOrderRepository
 {
-    public IQueryable<OrderBrief> GetAll();
+    public IQueryable<OrderBriefData> GetAll();
 
-    public OrderDetails? GetByIdOrDefault(Guid id);
+    public OrderDetailsData? GetByIdOrDefault(Guid id);
 
-    public Guid CreateOrder(NewOrder newOrder);
+    public Guid CreateOrder(NewOrderData newOrder);
 
-    public void Update(Guid id, OrderUpdate orderUpdate);
+    public void Update(Guid id, OrderUpdateData orderUpdate);
 }
 
-public record OrderBrief(Guid Id, DateTime CreationDateUtc, Status Status, string PaymentId, string BookingId);
+public record OrderBriefData
+{
+    public required Guid Id { get; init; }
+    public required DateTime CreationDateUtc { get; init; }
+    public required OrderStatusData Status { get; init; }
+    public required string PaymentId { get; init; }
+    public required string BookingId { get; init; }
+}
 
-public record OrderDetails(Guid Id, DateTime CreationDateUtc, string BookingId, Status Status, PaymentInfo Payment,
-    int? ReleaseCode, PickupPointInfo PickupPoint, IReadOnlyCollection<ContentInfo> Contents, decimal TotalPrice);
+public record OrderDetailsData
+{
+    public required Guid Id { get; init; }
+    public required DateTime CreationDateUtc { get; init; }
+    public required string BookingId { get; init; }
+    public required OrderStatusData Status { get; init; }
+    public required OrderPaymentData Payment { get; init; }
+    public required int? ReleaseCode { get; init; }
+    public required OrderPickupPointData PickupPoint { get; init; }
+    public required IReadOnlyCollection<OrderContentData> Contents { get; init; }
+    public required decimal TotalPrice { get; init; }
+}
 
-public enum Status
+public enum OrderStatusData
 {
     WaitingPayment,
     WaitingReceiving,
@@ -25,13 +42,40 @@ public enum Status
     ReceivingOverdue
 }
 
-public record PaymentInfo(string Id, string Link);
+public record OrderPaymentData
+{
+    public required string Id { get; init; }
+    public required string Link { get; init; }
+}
 
-public record NewOrder(string BookingId, PaymentInfo Payment, PickupPointInfo PickupPoint,
-    IEnumerable<ContentInfo> Contents, decimal TotalPrice);
+public record NewOrderData
+{
+    public required string BookingId { get; init; }
+    public required OrderPaymentData Payment { get; init; }
+    public required OrderPickupPointData PickupPoint { get; init; }
+    public required IEnumerable<OrderContentData> Contents { get; init; }
+    public required decimal TotalPrice { get; init; }
+}
 
-public record PickupPointInfo(string Id, string Address, string Description);
+public record OrderPickupPointData
+{
+    public required string Id { get; init; }
+    public required string Address { get; init; }
+    public required string Description { get; init; }
+}
 
-public record ContentInfo(string Id, string Name, string Description, string PhotoLink, int Count, decimal Price);
+public record OrderContentData
+{
+    public required string Id { get; init; }
+    public required string Name { get; init; }
+    public required string Description { get; init; }
+    public required string PhotoLink { get; init; }
+    public required int Count { get; init; }
+    public required decimal Price { get; init; }
+}
 
-public record OrderUpdate(Status? NewStatus, int? ReleaseCode);
+public record OrderUpdateData
+{
+    public required OrderStatusData? NewStatus { get; init; }
+    public required int? ReleaseCode { get; init; }
+}

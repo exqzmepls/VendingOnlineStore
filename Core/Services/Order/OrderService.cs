@@ -3,9 +3,6 @@ using Core.Clients.Payment;
 using Core.Extensions;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
-using OrderDetailsData = Core.Repositories.Order.OrderDetails;
-using OrderBriefData = Core.Repositories.Order.OrderBrief;
-using NewOrderData = Core.Repositories.Order.NewOrder;
 
 namespace Core.Services.Order;
 
@@ -38,8 +35,8 @@ public class OrderService : IOrderService
     public IQueryable<OrderBrief> GetAll()
     {
         var result = _orderRepository.GetAll()
-            //.OrderByDescending(o => o.BookingId)
-            .Select(o => MapToOrderBrief(o));
+            .OrderByDescending(o => o.CreationDateUtc)
+            .MapToOrderBrief();
         return result;
     }
 
@@ -71,18 +68,41 @@ public class OrderService : IOrderService
         var payment = await _paymentClient.CreatePaymentAsync(orderTotalPrice);
 
         // create order
-        var paymentInfo = new PaymentInfo(payment.Id, payment.Link);
+        var orderPayment = new OrderPaymentData
+        {
+            Id = payment.Id,
+            Link = payment.Link
+        };
 
         var pickupPoint = bookingDetails.PickupPoint;
-        var pickupPointInfo = new PickupPointInfo(pickupPoint.Id, pickupPoint.Address, pickupPoint.Description);
-        var contentsInfo = bookingContents.Select(c =>
+        var orderPickupPoint = new OrderPickupPointData
+        {
+            Id = pickupPoint.Id,
+            Address = pickupPoint.Address,
+            Description = pickupPoint.Description
+        };
+        var orderContents = bookingContents.Select(c =>
         {
             var item = c.Item;
-            var contentInfo = new ContentInfo(item.Id, item.Name, item.Description, item.PhotoLink, c.Count, c.Price);
+            var contentInfo = new OrderContentData
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                PhotoLink = item.PhotoLink,
+                Count = c.Count,
+                Price = c.Price
+            };
             return contentInfo;
         });
-        var newOrderData =
-            new NewOrderData(bookingDetails.Id, paymentInfo, pickupPointInfo, contentsInfo, orderTotalPrice);
+        var newOrderData = new NewOrderData
+        {
+            BookingId = bookingDetails.Id,
+            Payment = orderPayment,
+            PickupPoint = orderPickupPoint,
+            Contents = orderContents,
+            TotalPrice = orderTotalPrice
+        };
         var createdOrderId = _orderRepository.CreateOrder(newOrderData);
 
         // remove from bag
@@ -94,48 +114,44 @@ public class OrderService : IOrderService
 
     private static OrderDetails MapToOrderDetails(OrderDetailsData orderData)
     {
-        var status = MapToOrderStatus(orderData.Status);
+        var status = orderData.Status.MapToOrderStatus();
         var orderPickupPoint = MapToOrderPickupPoint(orderData.PickupPoint);
         var orderContents = orderData.Contents.Select(MapToOrderContent).ToReadOnlyCollection();
-        var orderDetails = new OrderDetails(
-            orderData.Id,
-            orderData.CreationDateUtc,
-            status,
-            orderData.Payment.Link,
-            orderData.ReleaseCode,
-            orderPickupPoint,
-            orderContents,
-            orderData.TotalPrice
-        );
+        var orderDetails = new OrderDetails
+        {
+            Id = orderData.Id,
+            CreationDateUtc = orderData.CreationDateUtc,
+            Status = status,
+            PaymentLink = orderData.Payment.Link,
+            ReleaseCode = orderData.ReleaseCode,
+            PickupPoint = orderPickupPoint,
+            Contents = orderContents,
+            TotalPrice = orderData.TotalPrice
+        };
         return orderDetails;
     }
 
-    private static OrderContent MapToOrderContent(ContentInfo contentInfo)
+    private static OrderContent MapToOrderContent(OrderContentData orderContentData)
     {
-        var orderContent = new OrderContent(
-            contentInfo.Name,
-            contentInfo.Description,
-            contentInfo.PhotoLink,
-            contentInfo.Count,
-            contentInfo.Price
-        );
+        var orderContent = new OrderContent
+        {
+            Name = orderContentData.Name,
+            Description = orderContentData.Description,
+            PhotoLink = orderContentData.PhotoLink,
+            Count = orderContentData.Count,
+            Price = orderContentData.Price
+        };
         return orderContent;
     }
 
-    private static OrderPickupPoint MapToOrderPickupPoint(PickupPointInfo pickupPointInfo)
+    private static OrderPickupPoint MapToOrderPickupPoint(OrderPickupPointData orderPickupPointData)
     {
-        var orderPickupPoint = new OrderPickupPoint(
-            pickupPointInfo.Address,
-            pickupPointInfo.Description
-        );
+        var orderPickupPoint = new OrderPickupPoint
+        {
+            Address = orderPickupPointData.Address,
+            Description = orderPickupPointData.Description
+        };
         return orderPickupPoint;
-    }
-
-    private static OrderBrief MapToOrderBrief(OrderBriefData orderData)
-    {
-        var status = MapToOrderStatus(orderData.Status);
-        var orderBrief = new OrderBrief(orderData.Id, orderData.CreationDateUtc, status);
-        return orderBrief;
     }
 
     private static NewBookingContent GetNewBookingContent(NewOrderContent newOrderContent,
@@ -150,19 +166,6 @@ public class OrderService : IOrderService
     {
         var totalSum = contents.Sum(c => c.Count * c.Price);
         return totalSum;
-    }
-
-    private static OrderStatus MapToOrderStatus(Status status)
-    {
-        return status switch
-        {
-            Status.WaitingPayment => OrderStatus.WaitingPayment,
-            Status.WaitingReceiving => OrderStatus.WaitingReceiving,
-            Status.PaymentOverdue => OrderStatus.PaymentOverdue,
-            Status.Received => OrderStatus.Received,
-            Status.ReceivingOverdue => OrderStatus.ReceivingOverdue,
-            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
-        };
     }
 
     private async Task<BagSectionDetails> GetBagSectionDataAsync(Guid bagSectionId)
