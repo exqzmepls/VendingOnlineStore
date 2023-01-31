@@ -15,15 +15,15 @@ public class OrderRepository : IOrderRepository
         _appDbContext = appDbContext;
     }
 
-    public IQueryable<OrderBrief> GetAll()
+    public IQueryable<OrderBriefData> GetAll()
     {
         var result = _appDbContext.Orders
             .Include(o => o.Payment)
-            .Select(o => MapToOrderBrief(o));
+            .MapToOrderBriefData();
         return result;
     }
 
-    public OrderDetails? GetByIdOrDefault(Guid id)
+    public OrderDetailsData? GetByIdOrDefault(Guid id)
     {
         var order = _appDbContext.Orders.Find(id);
         if (order == default)
@@ -36,7 +36,7 @@ public class OrderRepository : IOrderRepository
         return result;
     }
 
-    public Guid CreateOrder(NewOrder newOrder)
+    public Guid CreateOrder(NewOrderData newOrder)
     {
         var newOrderEntity = MapToOrderEntity(newOrder);
         var entry = _appDbContext.Orders.Add(newOrderEntity);
@@ -45,7 +45,7 @@ public class OrderRepository : IOrderRepository
         return entry.Entity.Id;
     }
 
-    public void Update(Guid id, OrderUpdate orderUpdate)
+    public void Update(Guid id, OrderUpdateData orderUpdate)
     {
         var order = _appDbContext.Orders.Find(id);
         if (order == default)
@@ -67,20 +67,7 @@ public class OrderRepository : IOrderRepository
         }
     }
 
-    private static OrderBrief MapToOrderBrief(OrderEntity order)
-    {
-        var status = MapToStatus(order.Status);
-        var orderBrief = new OrderBrief(
-            order.Id,
-            order.CreationDateUtc,
-            status,
-            order.Payment!.ExternalId,
-            order.BookingId
-        );
-        return orderBrief;
-    }
-
-    private static OrderEntity MapToOrderEntity(NewOrder newOrder)
+    private static OrderEntity MapToOrderEntity(NewOrderData newOrder)
     {
         var payment = MapToPaymentEntity(newOrder.Payment);
         var pickupPoint = MapToPickupPointEntity(newOrder.PickupPoint);
@@ -98,7 +85,7 @@ public class OrderRepository : IOrderRepository
         return orderEntity;
     }
 
-    private static Payment MapToPaymentEntity(PaymentInfo paymentInfo)
+    private static Payment MapToPaymentEntity(OrderPaymentData paymentInfo)
     {
         var paymentEntity = new Payment
         {
@@ -108,7 +95,7 @@ public class OrderRepository : IOrderRepository
         return paymentEntity;
     }
 
-    private static OrderPickupPoint MapToPickupPointEntity(PickupPointInfo pickupPointInfo)
+    private static OrderPickupPoint MapToPickupPointEntity(OrderPickupPointData pickupPointInfo)
     {
         var pickupPointEntity = new OrderPickupPoint
         {
@@ -119,7 +106,7 @@ public class OrderRepository : IOrderRepository
         return pickupPointEntity;
     }
 
-    private static OrderContent MapToContentEntity(ContentInfo contentInfo)
+    private static OrderContent MapToContentEntity(OrderContentData contentInfo)
     {
         var contentEntity = new OrderContent
         {
@@ -133,80 +120,71 @@ public class OrderRepository : IOrderRepository
         return contentEntity;
     }
 
-    private static OrderDetails MapToOrderDetails(OrderEntity order)
+    private static OrderDetailsData MapToOrderDetails(OrderEntity order)
     {
-        var status = MapToStatus(order.Status);
+        var status = order.Status.MapToOrderStatusData();
         var payment = MatToPaymentInfo(order.Payment!);
         var pickupPoint = MapToPickupPointInfo(order.OrderPickupPoint!);
         var contents = order.OrderContents!.Select(MapToContentInfo).ToReadOnlyCollection();
-        var orderDetails = new OrderDetails(
-            order.Id,
-            order.CreationDateUtc,
-            order.BookingId,
-            status,
-            payment,
-            order.ReleaseCode,
-            pickupPoint,
-            contents,
-            order.TotalPrice
-        );
+        var orderDetails = new OrderDetailsData
+        {
+            Id = order.Id,
+            CreationDateUtc = order.CreationDateUtc,
+            BookingId = order.BookingId,
+            Status = status,
+            Payment = payment,
+            ReleaseCode = order.ReleaseCode,
+            PickupPoint = pickupPoint,
+            Contents = contents,
+            TotalPrice = order.TotalPrice
+        };
         return orderDetails;
     }
 
-    private static PaymentInfo MatToPaymentInfo(Payment payment)
+    private static OrderPaymentData MatToPaymentInfo(Payment payment)
     {
-        var paymentInfo = new PaymentInfo(
-            payment.ExternalId,
-            payment.Link
-        );
+        var paymentInfo = new OrderPaymentData
+        {
+            Id = payment.ExternalId,
+            Link = payment.Link
+        };
         return paymentInfo;
     }
 
-    private static PickupPointInfo MapToPickupPointInfo(OrderPickupPoint orderPickupPoint)
+    private static OrderPickupPointData MapToPickupPointInfo(OrderPickupPoint orderPickupPoint)
     {
-        var pickupPointInfo = new PickupPointInfo(
-            orderPickupPoint.ExternalId,
-            orderPickupPoint.Address,
-            orderPickupPoint.Description
-        );
+        var pickupPointInfo = new OrderPickupPointData
+        {
+            Id = orderPickupPoint.ExternalId,
+            Address = orderPickupPoint.Address,
+            Description = orderPickupPoint.Description,
+        };
         return pickupPointInfo;
     }
 
-    private static ContentInfo MapToContentInfo(OrderContent orderContent)
+    private static OrderContentData MapToContentInfo(OrderContent orderContent)
     {
-        var contentInfo = new ContentInfo(
-            orderContent.ExternalId,
-            orderContent.Name,
-            orderContent.Description,
-            orderContent.PhotoLink,
-            orderContent.Count,
-            orderContent.Price
-        );
+        var contentInfo = new OrderContentData
+        {
+            Id = orderContent.ExternalId,
+            Name = orderContent.Name,
+            Description = orderContent.Description,
+            PhotoLink = orderContent.PhotoLink,
+            Count = orderContent.Count,
+            Price = orderContent.Price
+        };
         return contentInfo;
     }
 
-    private static Status MapToStatus(OrderStatus orderStatus)
-    {
-        return orderStatus switch
-        {
-            OrderStatus.WaitingPayment => Status.WaitingPayment,
-            OrderStatus.WaitingReceiving => Status.WaitingReceiving,
-            OrderStatus.PaymentOverdue => Status.PaymentOverdue,
-            OrderStatus.Received => Status.Received,
-            OrderStatus.ReceivingOverdue => Status.ReceivingOverdue,
-            _ => throw new ArgumentOutOfRangeException(nameof(orderStatus), orderStatus, null)
-        };
-    }
-
-    private static OrderStatus MapToOrderStatus(Status status)
+    private static OrderStatus MapToOrderStatus(OrderStatusData status)
     {
         return status switch
         {
-            Status.WaitingPayment => OrderStatus.WaitingPayment,
-            Status.WaitingReceiving => OrderStatus.WaitingReceiving,
-            Status.PaymentOverdue => OrderStatus.PaymentOverdue,
-            Status.Received => OrderStatus.Received,
-            Status.ReceivingOverdue => OrderStatus.ReceivingOverdue,
+            OrderStatusData.WaitingPayment => OrderStatus.WaitingPayment,
+            OrderStatusData.WaitingReceiving => OrderStatus.WaitingReceiving,
+            OrderStatusData.PaymentOverdue => OrderStatus.PaymentOverdue,
+            OrderStatusData.Received => OrderStatus.Received,
+            OrderStatusData.ReceivingOverdue => OrderStatus.ReceivingOverdue,
             _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
         };
     }

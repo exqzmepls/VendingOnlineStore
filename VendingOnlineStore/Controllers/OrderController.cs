@@ -46,7 +46,12 @@ public class OrderController : Controller
     private static OrderViewModel MapToOrderViewModel(OrderBrief order)
     {
         var orderStatus = MapToOrderStatus(order.Status);
-        var orderViewModel = new OrderViewModel(order.Id, order.CreationDateUtc, orderStatus);
+        var orderViewModel = new OrderViewModel
+        {
+            Id = order.Id,
+            CreationDateUtc = order.CreationDateUtc,
+            Status = orderStatus
+        };
         return orderViewModel;
     }
 
@@ -88,10 +93,27 @@ public class OrderController : Controller
         return orderContentViewModel;
     }
 
-    private static NewOrder MapToNewOrder(NewOrderViewModel newOrderModel)
+    private static NewOrder MapToNewOrder(NewOrderViewModel newOrderViewModel)
     {
-        return new NewOrder(newOrderModel.BagSectionId,
-            newOrderModel.Contents.Select(c => new NewOrderContent(c.BagContentId, c.Count)).ToReadOnlyCollection());
+        var contents = newOrderViewModel.Contents
+            .Select(MapToNewOrderContent)
+            .ToReadOnlyCollection();
+        var newOrder = new NewOrder
+        {
+            BagSectionId = newOrderViewModel.BagSectionId,
+            Contents = contents,
+        };
+        return newOrder;
+    }
+
+    private static NewOrderContent MapToNewOrderContent(NewOrderContentViewModel newOrderContentViewModel)
+    {
+        var newOrderContent = new NewOrderContent
+        {
+            BagContentId = newOrderContentViewModel.BagContentId,
+            Count = newOrderContentViewModel.Count
+        };
+        return newOrderContent;
     }
 
     private static OrderStatus MapToOrderStatus(Status status)

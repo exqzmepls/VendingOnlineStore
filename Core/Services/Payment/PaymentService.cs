@@ -60,13 +60,13 @@ public class PaymentService : IPaymentService
         MakeOrderReleaseReady(order, releaseCode);
     }
 
-    private OrderBrief GetOrderByPaymentId(string paymentId)
+    private OrderBriefData GetOrderByPaymentId(string paymentId)
     {
-        var order = _orderRepository.GetAll().ToList().SingleOrDefault(o => o.PaymentId == paymentId);
+        var order = _orderRepository.GetAll().SingleOrDefault(o => o.PaymentId == paymentId);
         return order ?? throw new OrderNotFoundException($"Order with Payment Id = {paymentId}");
     }
 
-    private async Task DropOrderBookingAsync(OrderBrief order)
+    private async Task DropOrderBookingAsync(OrderBriefData order)
     {
         var bookingId = order.BookingId;
         try
@@ -79,13 +79,17 @@ public class PaymentService : IPaymentService
         }
     }
 
-    private void MakeOrderCanceled(OrderBrief order)
+    private void MakeOrderCanceled(OrderBriefData order)
     {
-        var orderUpdate = new OrderUpdate(Status.PaymentOverdue, default);
+        var orderUpdate = new OrderUpdateData
+        {
+            NewStatus = OrderStatusData.PaymentOverdue,
+            ReleaseCode = default
+        };
         UpdateOrder(order, orderUpdate);
     }
 
-    private async Task<int> ApproveOrderBookingAsync(OrderBrief order)
+    private async Task<int> ApproveOrderBookingAsync(OrderBriefData order)
     {
         var bookingId = order.BookingId;
         try
@@ -99,13 +103,17 @@ public class PaymentService : IPaymentService
         }
     }
 
-    private void MakeOrderReleaseReady(OrderBrief order, int releaseCode)
+    private void MakeOrderReleaseReady(OrderBriefData order, int releaseCode)
     {
-        var orderUpdate = new OrderUpdate(Status.WaitingReceiving, releaseCode);
+        var orderUpdate = new OrderUpdateData
+        {
+            NewStatus = OrderStatusData.WaitingPayment,
+            ReleaseCode = releaseCode
+        };
         UpdateOrder(order, orderUpdate);
     }
 
-    private void UpdateOrder(OrderBrief order, OrderUpdate update)
+    private void UpdateOrder(OrderBriefData order, OrderUpdateData update)
     {
         var orderId = order.Id;
         try
