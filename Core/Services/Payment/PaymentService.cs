@@ -62,7 +62,7 @@ public class PaymentService : IPaymentService
 
     private OrderBrief GetOrderByPaymentId(string paymentId)
     {
-        var order = _orderRepository.GetAll().SingleOrDefault(o => o.PaymentId == paymentId);
+        var order = _orderRepository.GetAll().ToList().SingleOrDefault(o => o.PaymentId == paymentId);
         return order ?? throw new OrderNotFoundException($"Order with Payment Id = {paymentId}");
     }
 
@@ -101,7 +101,7 @@ public class PaymentService : IPaymentService
 
     private void MakeOrderReleaseReady(OrderBrief order, int releaseCode)
     {
-        var orderUpdate = new OrderUpdate(Status.WaitingPayment, releaseCode);
+        var orderUpdate = new OrderUpdate(Status.WaitingReceiving, releaseCode);
         UpdateOrder(order, orderUpdate);
     }
 
