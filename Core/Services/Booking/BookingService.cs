@@ -21,7 +21,7 @@ public class BookingService : IBookingService
 
         await _paymentClient.CapturePaymentAsync(order.PaymentId);
 
-        UpdateOrderStatus(order.Id, Status.Received);
+        UpdateOrderStatus(order.Id, OrderStatusData.Received);
     }
 
     public async Task OnOverdueAsync(string bookingId)
@@ -30,12 +30,12 @@ public class BookingService : IBookingService
 
         await _paymentClient.CancelPaymentAsync(order.PaymentId);
 
-        UpdateOrderStatus(order.Id, Status.ReceivingOverdue);
+        UpdateOrderStatus(order.Id, OrderStatusData.ReceivingOverdue);
     }
 
-    private OrderBrief GetOrderByBookingId(string bookingId)
+    private OrderBriefData GetOrderByBookingId(string bookingId)
     {
-        var ordersQueryable = _orderRepository.GetAll().ToList();
+        var ordersQueryable = _orderRepository.GetAll();
         var bookingOrder = ordersQueryable.SingleOrDefault(o => o.BookingId == bookingId);
         if (bookingOrder == default)
             throw new OrderNotFoundException();
@@ -43,9 +43,13 @@ public class BookingService : IBookingService
         return bookingOrder;
     }
 
-    private void UpdateOrderStatus(Guid orderId, Status newStatus)
+    private void UpdateOrderStatus(Guid orderId, OrderStatusData newStatus)
     {
-        var orderUpdate = new OrderUpdate(newStatus, default);
+        var orderUpdate = new OrderUpdateData
+        {
+            NewStatus = newStatus,
+            ReleaseCode = default
+        };
         try
         {
             _orderRepository.Update(orderId, orderUpdate);

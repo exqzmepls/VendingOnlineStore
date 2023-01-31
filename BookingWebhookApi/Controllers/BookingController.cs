@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using BookingWebhookApi.Contracts;
 using Core.Services.Booking;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace BookingWebhookApi.Controllers;
 
@@ -18,8 +19,11 @@ public class BookingController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost(nameof(Release))]
-    public async Task<IActionResult> Release([Required, FromBody] ReleaseNotification notification)
+    [HttpPost("release")]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ReleaseAsync([Required, FromBody] ReleaseNotification notification)
     {
         var booking = notification.Booking;
         var bookingId = booking.Id;
@@ -36,14 +40,17 @@ public class BookingController : ControllerBase
         return Ok();
     }
 
-    [HttpPost(nameof(Overdue))]
-    public IActionResult Overdue([Required, FromBody] OverdueNotification notification)
+    [HttpPost("overdue")]
+    [SwaggerResponse(StatusCodes.Status200OK)]
+    [SwaggerResponse(StatusCodes.Status400BadRequest)]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> OverdueAsync([Required, FromBody] OverdueNotification notification)
     {
         var booking = notification.Booking;
         var bookingId = booking.Id;
         try
         {
-            _bookingService.OnOverdueAsync(bookingId);
+            await _bookingService.OnOverdueAsync(bookingId);
         }
         catch (Exception exception)
         {
