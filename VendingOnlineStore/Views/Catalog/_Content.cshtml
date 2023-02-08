@@ -2,15 +2,15 @@
 @model ContentViewModel
 
 <div class="row">
-    <div class="col-sm-7">
+    <div class="col-7">
         @{
             await Html.RenderPartialAsync("_PickupPoint", Model.PickupPoint);
         }
     </div>
-    <div class="col-sm-2">
+    <div class="col-2">
         @Html.DisplayFor(m => m.Price)
     </div>
-    <div class="col-sm-3">
+    <div class="col-3">
         @{
             var id = $"bag-content-{Model.BagContent.OptionIndex}-{Model.BagContent.Index}";
         }

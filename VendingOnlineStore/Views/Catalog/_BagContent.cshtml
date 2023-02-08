@@ -21,15 +21,15 @@ else
         Id = Model.BagEntrance.BagContentId
     };
 
-    <div class="col-sm-4">
+    <div class="col-4">
         @{
             await Html.RenderPartialAsync("_DecreaseContentCountForm", bagContentIdViewModel);
         }
     </div>
-    <div class="col-sm-4">
+    <div class="col-4">
         @Html.DisplayFor(m => m.BagEntrance!.Count)
     </div>
-    <div class="col-sm-4">
+    <div class="col-4">
         @{
             await Html.RenderPartialAsync("_IncreaseContentCountForm", bagContentIdViewModel);
         }
