@@ -2,13 +2,19 @@
 
 public interface IBagContentRepository
 {
-    public Task<BagContentDetails?> GetOrDefaultAsync(Guid id);
+    public Task<BagContentDetailsData?> GetOrDefaultAsync(Guid id);
 
-    public Task<BagContentDetails?> UpdateAsync(Guid id, BagContentUpdate update);
+    public Task<Guid> CreateAsync(NewBagContentData newBagContentData);
 
-    public Task<bool> DeleteAsync(Guid id);
+    public Task UpdateAsync(Guid id, BagContentUpdate update);
+
+    public Task DeleteAsync(Guid id);
 }
 
-public record BagContentDetails(Guid Id, Guid SectionId, string ItemId, int Count);
+public record BagContentDetailsData(Guid Id, BagSectionBriefData Section, string ItemId, int Count);
+
+public record BagSectionBriefData(Guid Id, string PickupPointId);
 
 public record BagContentUpdate(int NewCount);
+
+public record NewBagContentData(Guid BagSectionId, string ItemId, int Count);

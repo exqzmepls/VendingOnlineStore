@@ -1,0 +1,15 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model OptionViewModel
+
+<div class="row m-1 p-2 border rounded-2">
+    <div class="col-sm-9">
+        @{
+            await Html.RenderPartialAsync("_Item", Model.Item);
+        }
+    </div>
+    <div class="col-sm-3 d-flex justify-content-center align-items-center">
+        @{
+            await Html.RenderPartialAsync("_ContentCollection", Model.ContentCollection);
+        }
+    </div>
+</div>

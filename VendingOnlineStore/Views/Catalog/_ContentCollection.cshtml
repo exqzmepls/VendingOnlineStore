@@ -1,0 +1,28 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model ContentCollectionViewModel
+
+@{
+    var modalId = $"modal-{Model.OptionIndex}";
+}
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#@modalId">Get</button>
+
+<div class="modal fade" id="@modalId" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pickup Points</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @foreach (var content in Model.Contents)
+                {
+                    await Html.RenderPartialAsync("_Content", content);
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back to Shop</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -4,9 +4,9 @@ public static class DummyData
 {
     public static readonly IList<DummyPickupPoint> PickupPoints = new List<DummyPickupPoint>
     {
-        new("m1", "hse 3", "бульвар Гагарина, 37А, Пермь", 58.016314, 56.276928),
-        new("m2", "shopping mall", "улица Революции, 13, Пермь", 58.007545, 56.261786),
-        new("m3", "hse 1", "Студенческая улица, 38, Пермь", 58.010662, 56.281509)
+        new("p1", "hse 3", "бульвар Гагарина, 37А, Пермь", 58.016314, 56.276928),
+        new("p2", "shopping mall", "улица Революции, 13, Пермь", 58.007545, 56.261786),
+        new("p3", "hse 1", "Студенческая улица, 38, Пермь", 58.010662, 56.281509)
     };
 
     public static readonly IList<DummyItem> Items = new List<DummyItem>

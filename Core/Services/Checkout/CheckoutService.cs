@@ -47,7 +47,7 @@ public class CheckoutService : ICheckoutService
         return checkout;
     }
 
-    private static ContentDetails GetContentFromPickupPointPresentation(BagContentBrief bagContentData,
+    private static ContentDetails GetContentFromPickupPointPresentation(BagContentBriefData bagContentData,
         PickupPointPresentation presentation)
     {
         var itemId = bagContentData.ItemId;

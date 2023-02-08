@@ -1,8 +1,8 @@
-﻿using System.Collections.Immutable;
-using Core.Clients.PickupPoint;
+﻿using Core.Clients.PickupPoint;
 using Core.Extensions;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
+using Core.Services.Bag.Exceptions;
 using PickupPointData = Core.Clients.PickupPoint.PickupPoint;
 using ItemData = Core.Clients.PickupPoint.Item;
 
@@ -22,30 +22,24 @@ public class BagService : IBagService
         _pickupPointClient = pickupPointClient;
     }
 
-    public async Task<bool> DecreaseContentCountAsync(Guid contentId)
+    public async Task DecreaseContentCountAsync(Guid contentId)
     {
-        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
-        if (bagContentDetails == default)
-        {
-            return false;
-        }
+        var bagContentDetailsData = await GetBagContentDetailsDataAsync(contentId);
 
-        var updatedCount = bagContentDetails.Count - 1;
+        var updatedCount = bagContentDetailsData.Count - 1;
         if (updatedCount == 0)
         {
-            var isRemoved = await RemoveContentAsync(bagContentDetails.Id);
-            return isRemoved;
+            await RemoveContentAsync(bagContentDetailsData.Id);
+            return;
         }
 
-        var bagContentUpdate = new BagContentUpdate(updatedCount);
-        var updateBagContentDetails = await _bagContentRepository.UpdateAsync(bagContentDetails.Id, bagContentUpdate);
-        return updateBagContentDetails != default;
+        await UpdateBagContentCountAsync(bagContentDetailsData.Id, updatedCount);
     }
 
     public async Task<IReadOnlyCollection<BagSection>> GetSectionsAsync()
     {
         // get sections data
-        var bagSectionsData = _bagSectionRepository.GetAll().ToImmutableArray();
+        var bagSectionsData = _bagSectionRepository.GetAll().ToReadOnlyCollection();
 
         var isEmpty = !bagSectionsData.Any();
         if (isEmpty)
@@ -72,47 +66,50 @@ public class BagService : IBagService
         return bagSections;
     }
 
-    public async Task<bool> IncreaseContentCountAsync(Guid contentId)
+    public async Task IncreaseContentCountAsync(Guid contentId)
     {
-        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
-        if (bagContentDetails == default)
-        {
-            return false;
-        }
+        var bagContentDetailsData = await GetBagContentDetailsDataAsync(contentId);
 
-        var updatedCount = bagContentDetails.Count + 1;
-        var bagContentUpdate = new BagContentUpdate(updatedCount);
-        var updateBagContentDetails = await _bagContentRepository.UpdateAsync(bagContentDetails.Id, bagContentUpdate);
-        return updateBagContentDetails != default;
+        var updatedCount = bagContentDetailsData.Count + 1;
+        await UpdateBagContentCountAsync(bagContentDetailsData.Id, updatedCount);
     }
 
-    public async Task<bool> RemoveContentAsync(Guid contentId)
+    public async Task RemoveContentAsync(Guid contentId)
     {
-        var bagContentDetails = await _bagContentRepository.GetOrDefaultAsync(contentId);
-        if (bagContentDetails == default)
-        {
-            return false;
-        }
+        var bagContentDetailsData = await GetBagContentDetailsDataAsync(contentId);
 
-        var contentSectionId = bagContentDetails.SectionId;
+        var contentSectionId = bagContentDetailsData.Section.Id;
         var bagSectionDetails = await _bagSectionRepository.GetByIdOrDefaultAsync(contentSectionId);
         if (bagSectionDetails == default)
         {
-            return false;
+            throw new SectionNotFoundException("Section does not exist");
         }
 
         var sectionContentsCount = bagSectionDetails.Contents.Count;
         if (sectionContentsCount == 1)
         {
-            var isSectionRemoved = await _bagSectionRepository.DeleteAsync(contentSectionId);
-            return isSectionRemoved;
+            try
+            {
+                await _bagSectionRepository.DeleteAsync(contentSectionId);
+                return;
+            }
+            catch (Exception exception)
+            {
+                throw new SectionNotDeletedException("Section delete fell", exception);
+            }
         }
 
-        var isContentRemoved = await _bagContentRepository.DeleteAsync(bagContentDetails.Id);
-        return isContentRemoved;
+        try
+        {
+            await _bagContentRepository.DeleteAsync(bagContentDetailsData.Id);
+        }
+        catch (Exception exception)
+        {
+            throw new ContentNotDeletedException("Content delete fell", exception);
+        }
     }
 
-    private static BagSection GetBagSectionFromPickupPointsPresentations(BagSectionDetails bagSectionData,
+    private static BagSection GetBagSectionFromPickupPointsPresentations(BagSectionDetailsData bagSectionData,
         IEnumerable<PickupPointPresentation> pickupPointsPresentations)
     {
         // get pickup point contents
@@ -133,7 +130,7 @@ public class BagService : IBagService
         return bagSection;
     }
 
-    private static BagContent GetBagContentFromPickupPointContents(BagContentBrief bagContentData,
+    private static BagContent GetBagContentFromPickupPointContents(BagContentBriefData bagContentData,
         IEnumerable<PickupPointContent> pickupPointContents)
     {
         var itemId = bagContentData.ItemId;
@@ -157,5 +154,29 @@ public class BagService : IBagService
     {
         var item = new Item(itemData.Name, itemData.Description, itemData.PhotoLink);
         return item;
+    }
+
+    private async Task<BagContentDetailsData> GetBagContentDetailsDataAsync(Guid id)
+    {
+        var bagContentDetailsData = await _bagContentRepository.GetOrDefaultAsync(id);
+        if (bagContentDetailsData == default)
+        {
+            throw new ContentNotFoundException("Content does not exist.");
+        }
+
+        return bagContentDetailsData;
+    }
+
+    private async Task UpdateBagContentCountAsync(Guid contentId, int updatedCount)
+    {
+        var bagContentUpdate = new BagContentUpdate(updatedCount);
+        try
+        {
+            await _bagContentRepository.UpdateAsync(contentId, bagContentUpdate);
+        }
+        catch (Exception exception)
+        {
+            throw new ContentNotUpdatedException("Content update fell", exception);
+        }
     }
 }

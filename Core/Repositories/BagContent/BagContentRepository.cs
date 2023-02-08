@@ -1,5 +1,6 @@
 ﻿using Infrastructure;
 using BagContentEntity = Infrastructure.Models.BagContent;
+using BagSectionEntity = Infrastructure.Models.BagSection;
 
 namespace Core.Repositories.BagContent;
 
@@ -12,47 +13,47 @@ public class BagContentRepository : IBagContentRepository
         _appDbContext = appDbContext;
     }
 
-    /*public async Task<Guid?> AddAsync(NewBagItemDto newBagItem)
+    public async Task<Guid> CreateAsync(NewBagContentData newBagContentData)
     {
-        var newBagItemEntity = new BagContent
+        var bagContent = new BagContentEntity
         {
-            ItemId = newBagItem.ExternalId,
-            BagSectionId = newBagItem.MachineId
+            ItemId = newBagContentData.ItemId,
+            Count = newBagContentData.Count,
+            BagSectionId = newBagContentData.BagSectionId
         };
 
-        var addedEntityEntry = _appDbContext.Add(newBagItemEntity);
+        var entry = _appDbContext.BagContents.Add(bagContent);
         try
         {
             await _appDbContext.SaveChangesAsync();
-            return addedEntityEntry.Entity.Id;
+            return entry.Entity.Id;
         }
-        catch
+        catch (Exception exception)
         {
-            return default;
+            throw new DbException("Content not created", exception);
         }
-    }*/
+    }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var bagContentEntity = await _appDbContext.BagContents.FindAsync(id);
         if (bagContentEntity == default)
         {
-            return false;
+            throw new BagContentNotFoundException("Content does not exist");
         }
 
         _appDbContext.BagContents.Remove(bagContentEntity);
         try
         {
             await _appDbContext.SaveChangesAsync();
-            return true;
         }
-        catch
+        catch (Exception exception)
         {
-            return false;
+            throw new DbException("Content delete fell", exception);
         }
     }
 
-    public async Task<BagContentDetails?> GetOrDefaultAsync(Guid id)
+    public async Task<BagContentDetailsData?> GetOrDefaultAsync(Guid id)
     {
         var bagContentEntity = await _appDbContext.BagContents.FindAsync(id);
         if (bagContentEntity == default)
@@ -60,39 +61,49 @@ public class BagContentRepository : IBagContentRepository
             return default;
         }
 
-        var bagItem = Map(bagContentEntity);
-        return bagItem;
+        await _appDbContext.Entry(bagContentEntity).Reference(c => c.BagSection).LoadAsync();
+
+        var bagContentDetailsData = MapToBagContentDetailsData(bagContentEntity);
+        return bagContentDetailsData;
     }
 
-    public async Task<BagContentDetails?> UpdateAsync(Guid id, BagContentUpdate update)
+    public async Task UpdateAsync(Guid id, BagContentUpdate update)
     {
         var bagContentEntity = await _appDbContext.BagContents.FindAsync(id);
         if (bagContentEntity == default)
         {
-            return default;
+            throw new BagContentNotFoundException("Content does not exist");
         }
 
         bagContentEntity.Count = update.NewCount;
         try
         {
             await _appDbContext.SaveChangesAsync();
-            var updatedBagItem = Map(bagContentEntity);
-            return updatedBagItem;
         }
-        catch
+        catch (Exception exception)
         {
-            return default;
+            throw new DbException("Content not updated", exception);
         }
     }
 
-    private static BagContentDetails Map(BagContentEntity bagContentEntity)
+    private static BagContentDetailsData MapToBagContentDetailsData(BagContentEntity bagContentEntity)
     {
-        var bagContentDetails = new BagContentDetails(
+        var section = MapToBagSectionBriefData(bagContentEntity.BagSection!);
+        var bagContentDetailsData = new BagContentDetailsData(
             bagContentEntity.Id,
-            bagContentEntity.BagSectionId,
+            section,
             bagContentEntity.ItemId,
             bagContentEntity.Count
         );
-        return bagContentDetails;
+        return bagContentDetailsData;
+    }
+
+    private static BagSectionBriefData MapToBagSectionBriefData(BagSectionEntity bagSectionEntity)
+    {
+        var bagSectionBriefData = new BagSectionBriefData(
+            bagSectionEntity.Id,
+            bagSectionEntity.PickupPointId
+        );
+        return bagSectionBriefData;
     }
 }

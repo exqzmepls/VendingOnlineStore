@@ -1,0 +1,15 @@
+﻿@model VendingOnlineStore.Models.Catalog.ItemViewModel
+
+<div class="row">
+    <div class="col-sm-4">
+        <img class="img-fluid rounded-2" src="@Model.PhotoLink" alt="no photo"/>
+    </div>
+    <div class="row col-sm-8">
+        <div class="col-sm-12">
+            <b>@Html.DisplayFor(m => m.Name)</b>
+        </div>
+        <div class="col-sm-12">
+            @Html.DisplayFor(m => m.Description)
+        </div>
+    </div>
+</div>

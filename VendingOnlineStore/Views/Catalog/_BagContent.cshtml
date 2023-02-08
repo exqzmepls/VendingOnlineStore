@@ -1,0 +1,37 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model BagContentViewModel
+
+@if (Model.BagEntrance == default)
+{
+    var newBagContentViewModel = new NewBagContentViewModel
+    {
+        OptionIndex = Model.OptionIndex,
+        Index = Model.Index,
+        ItemId = Model.ItemId,
+        PickupPointId = Model.PickupPointId
+    };
+    await Html.RenderPartialAsync("_NewBagContentForm", newBagContentViewModel);
+}
+else
+{
+    var bagContentIdViewModel = new BagContentIdViewModel
+    {
+        OptionIndex = Model.OptionIndex,
+        Index = Model.Index,
+        Id = Model.BagEntrance.BagContentId
+    };
+
+    <div class="col-sm-4">
+        @{
+            await Html.RenderPartialAsync("_DecreaseContentCountForm", bagContentIdViewModel);
+        }
+    </div>
+    <div class="col-sm-4">
+        @Html.DisplayFor(m => m.BagEntrance!.Count)
+    </div>
+    <div class="col-sm-4">
+        @{
+            await Html.RenderPartialAsync("_IncreaseContentCountForm", bagContentIdViewModel);
+        }
+    </div>
+}
