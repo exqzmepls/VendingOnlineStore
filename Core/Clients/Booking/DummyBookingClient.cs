@@ -1,5 +1,5 @@
 using Core.Extensions;
-using static Infrastructure.DummyData;
+using static Core.DataSimulation.Data;
 
 namespace Core.Clients.Booking;
 

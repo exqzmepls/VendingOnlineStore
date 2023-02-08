@@ -1,6 +1,6 @@
 ﻿using Core.Clients.Vending;
 using Core.Extensions;
-using static Infrastructure.DummyData;
+using static Core.DataSimulation.Data;
 
 namespace Core.DataSimulation;
 

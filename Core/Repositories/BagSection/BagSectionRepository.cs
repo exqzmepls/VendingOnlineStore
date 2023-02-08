@@ -69,7 +69,7 @@ public class BagSectionRepository : IBagSectionRepository
     {
         var result = _appDbContext.BagSections
             .Include(s => s.BagContents)
-            .Select(bagSection => new BagSectionDetailsData
+            .Select(bagSection => new BagSectionDetailsData // todo to extensions
             {
                 Id = bagSection.Id,
                 PickupPointId = bagSection.PickupPointId,
