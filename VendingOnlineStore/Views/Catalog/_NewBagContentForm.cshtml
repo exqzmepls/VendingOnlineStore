@@ -1,0 +1,14 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model NewBagContentViewModel
+
+@{
+    var dataUpdateId = $"bag-content-{Model.OptionIndex}-{Model.Index}";
+}
+
+<form data-ajax="true" data-ajax-method="post" data-ajax-update="#@dataUpdateId" asp-controller="Catalog" asp-action="AddToBag">
+    <input asp-for="OptionIndex" type="hidden"/>
+    <input asp-for="Index" type="hidden"/>
+    <input asp-for="ItemId" type="hidden"/>
+    <input asp-for="PickupPointId" type="hidden"/>
+    <input type="submit" value="Add" class="btn btn-primary"/>
+</form>

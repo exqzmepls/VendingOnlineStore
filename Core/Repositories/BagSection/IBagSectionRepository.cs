@@ -2,13 +2,31 @@
 
 public interface IBagSectionRepository
 {
-    public IQueryable<BagSectionDetails> GetAll();
+    public IQueryable<BagSectionDetailsData> GetAll();
 
-    public Task<BagSectionDetails?> GetByIdOrDefaultAsync(Guid id);
+    public Task<BagSectionBriefData> CreateAsync(NewBagSectionData newBagSection);
 
-    public Task<bool> DeleteAsync(Guid id);
+    public Task<BagSectionDetailsData?> GetByIdOrDefaultAsync(Guid id);
+
+    public Task DeleteAsync(Guid id);
 }
 
-public record BagSectionDetails(Guid Id, string PickupPointId, IReadOnlyCollection<BagContentBrief> Contents);
+public record BagSectionDetailsData
+{
+    public required Guid Id { get; init; }
+    public required string PickupPointId { get; init; }
+    public required IReadOnlyCollection<BagContentBriefData> Contents { get; init; }
+}
 
-public record BagContentBrief(Guid Id, string ItemId, int Count);
+public record BagContentBriefData
+{
+    public required Guid Id { get; init; }
+    public required string ItemId { get; init; }
+    public required int Count { get; init; }
+}
+
+public record NewBagSectionData(string PickupPointId, IEnumerable<NewBagSectionContentData> Contents);
+
+public record NewBagSectionContentData(string ItemId, int Count);
+
+public record BagSectionBriefData(Guid Id, IReadOnlyCollection<Guid> ContentsIds);

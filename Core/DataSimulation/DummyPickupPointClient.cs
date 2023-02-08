@@ -1,7 +1,8 @@
+using Core.Clients.PickupPoint;
 using Core.Extensions;
-using static Infrastructure.DummyData;
+using static Core.DataSimulation.Data;
 
-namespace Core.Clients.PickupPoint;
+namespace Core.DataSimulation;
 
 public class DummyPickupPointClient : IPickupPointClient
 {

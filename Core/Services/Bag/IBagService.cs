@@ -4,11 +4,11 @@ public interface IBagService
 {
     public Task<IReadOnlyCollection<BagSection>> GetSectionsAsync();
 
-    public Task<bool> RemoveContentAsync(Guid contentId);
+    public Task RemoveContentAsync(Guid contentId);
 
-    public Task<bool> IncreaseContentCountAsync(Guid contentId);
+    public Task IncreaseContentCountAsync(Guid contentId);
 
-    public Task<bool> DecreaseContentCountAsync(Guid contentId);
+    public Task DecreaseContentCountAsync(Guid contentId);
 }
 
 public record BagSection(Guid Id, PickupPoint PickupPoint, IReadOnlyCollection<BagContent> Contents,

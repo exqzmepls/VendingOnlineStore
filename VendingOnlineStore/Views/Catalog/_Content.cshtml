@@ -1,0 +1,23 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model ContentViewModel
+
+<div class="row">
+    <div class="col-7">
+        @{
+            await Html.RenderPartialAsync("_PickupPoint", Model.PickupPoint);
+        }
+    </div>
+    <div class="col-2">
+        @Html.DisplayFor(m => m.Price)
+    </div>
+    <div class="col-3">
+        @{
+            var id = $"bag-content-{Model.BagContent.OptionIndex}-{Model.BagContent.Index}";
+        }
+        <div id="@id" class="row">
+            @{
+                await Html.RenderPartialAsync("_BagContent", Model.BagContent);
+            }
+        </div>
+    </div>
+</div>

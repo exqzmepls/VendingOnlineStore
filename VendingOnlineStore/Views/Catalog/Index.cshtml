@@ -1,0 +1,24 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model IEnumerable<OptionViewModel>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<h1>Shop</h1>
+<hr/>
+<div class="row">
+    @foreach (var option in Model)
+    {
+        <div class="col-12 col-md-6">
+            @{
+                await Html.RenderPartialAsync("_Option", option);
+            }
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+}

@@ -155,7 +155,7 @@ public class OrderService : IOrderService
     }
 
     private static NewBookingContent GetNewBookingContent(NewOrderContent newOrderContent,
-        IEnumerable<BagContentBrief> bagSectionContents)
+        IEnumerable<BagContentBriefData> bagSectionContents)
     {
         var bagContent = bagSectionContents.Single(c => c.Id == newOrderContent.BagContentId);
         var newBookingContent = new NewBookingContent(bagContent.ItemId, newOrderContent.Count);
@@ -168,7 +168,7 @@ public class OrderService : IOrderService
         return totalSum;
     }
 
-    private async Task<BagSectionDetails> GetBagSectionDataAsync(Guid bagSectionId)
+    private async Task<BagSectionDetailsData> GetBagSectionDataAsync(Guid bagSectionId)
     {
         var bagSection = await _bagSectionRepository.GetByIdOrDefaultAsync(bagSectionId);
         if (bagSection == default)

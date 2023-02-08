@@ -26,8 +26,11 @@ public class BagController : Controller
     [HttpPost]
     public async Task<IActionResult> IncreaseItemCountAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.IncreaseContentCountAsync(itemId);
-        if (!isSuccess)
+        try
+        {
+            await _bagService.IncreaseContentCountAsync(itemId);
+        }
+        catch
         {
             return BadRequest();
         }
@@ -39,8 +42,11 @@ public class BagController : Controller
     [HttpPost]
     public async Task<IActionResult> DecreaseItemCountAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.DecreaseContentCountAsync(itemId);
-        if (!isSuccess)
+        try
+        {
+            await _bagService.DecreaseContentCountAsync(itemId);
+        }
+        catch
         {
             return BadRequest();
         }
@@ -52,8 +58,11 @@ public class BagController : Controller
     [HttpPost]
     public async Task<IActionResult> RemoveItemAsync(Guid itemId)
     {
-        var isSuccess = await _bagService.RemoveContentAsync(itemId);
-        if (!isSuccess)
+        try
+        {
+            await _bagService.RemoveContentAsync(itemId);
+        }
+        catch
         {
             return BadRequest();
         }
