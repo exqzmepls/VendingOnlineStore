@@ -1,4 +1,4 @@
-POST https://2695-92-255-139-185.eu.ngrok.io/payment
+POST http://localhost:5123/payment
 Content-Type: application/json
 
-{ "event": "payment.waiting_for_capture", "object": { "id": "22d6d597-000f-5000-9000-145f6df21d6f" } }
+{ "event": "payment.waiting_for_capture", "object": { "id": "2b68ca44-000f-5000-a000-1d833a3055d9" } }

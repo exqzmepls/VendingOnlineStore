@@ -20,7 +20,7 @@ public class YandexPaymentClient : IPaymentClient
         var newPayment = new NewPayment
         {
             Description = "Test payment",
-            Capture = true,
+            Capture = false,
             Amount = new Amount
             {
                 Value = price,
@@ -36,6 +36,16 @@ public class YandexPaymentClient : IPaymentClient
 
         var result = MapToPaymentDetails(payment);
         return result;
+    }
+
+    public async Task CapturePaymentAsync(string paymentId)
+    {
+        await _client.CapturePaymentAsync(paymentId);
+    }
+
+    public async Task CancelPaymentAsync(string id)
+    {
+        await _client.CancelPaymentAsync(id);
     }
 
     private static PaymentDetails MapToPaymentDetails(PaymentObject payment)

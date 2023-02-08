@@ -1,24 +1,23 @@
-using Core.Clients.Booking;
+using Core.Clients.Payment;
 using Core.Repositories.Order;
-using Core.Services.Payment;
+using Core.Services.Booking;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
 var services = builder.Services;
 
-services.AddSingleton<IBookingClient, DummyBookingClient>();
+services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
 services.AddScoped<IOrderRepository, OrderRepository>();
-services.AddScoped<IPaymentService, PaymentService>();
+services.AddScoped<IBookingService, BookingService>();
 
 services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 

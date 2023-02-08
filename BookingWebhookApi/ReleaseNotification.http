@@ -1,0 +1,4 @@
+POST http://localhost:5077/Booking/Release
+Content-Type: application/json
+
+{ "booking": { "id": "042035cb-7a07-49a2-ab21-83bf995c1cab" } }

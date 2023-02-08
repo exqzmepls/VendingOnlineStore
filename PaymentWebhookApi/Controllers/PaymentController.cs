@@ -18,14 +18,14 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult Webhook([FromBody] WebhookNotification notification)
+    public async Task<IActionResult> Webhook([FromBody] WebhookNotification notification)
     {
         try
         {
             var eventName = notification.Event;
             var paymentId = notification.Object.Id;
             _logger.LogInformation("Webhook notification ({EventName} for payment {PaymentId})", eventName, paymentId);
-            _paymentService.ProcessEventAsync(eventName, paymentId);
+            await _paymentService.ProcessEventAsync(eventName, paymentId);
         }
         catch (Exception exception)
         {
