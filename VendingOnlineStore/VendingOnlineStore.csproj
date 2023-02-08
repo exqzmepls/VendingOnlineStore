@@ -14,4 +14,9 @@
         <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Item\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Item\Machines.cshtml" />
+    </ItemGroup>
+
 </Project>
