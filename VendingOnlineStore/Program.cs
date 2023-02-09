@@ -14,6 +14,8 @@ using Core.Services.Checkout;
 using Core.Services.Order;
 using Core.Services.Vending;
 using Infrastructure;
+using Infrastructure.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,9 @@ var services = builder.Services;
 // db context
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+// identity
+services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<AppDbContext>();
 
 // clients
 services.AddSingleton<IVendingClient, DummyVendingClient>();
@@ -61,6 +66,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
