@@ -1,3 +1,4 @@
+using Core.AppInterfaces;
 using Core.Clients.Booking;
 using Core.Clients.Catalog;
 using Core.Clients.Geo;
@@ -8,6 +9,7 @@ using Core.DataSimulation;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
+using Core.Services.Account;
 using Core.Services.Bag;
 using Core.Services.Catalog;
 using Core.Services.Checkout;
@@ -17,6 +19,7 @@ using Infrastructure;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using VendingOnlineStore.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,12 +40,16 @@ services.AddSingleton<ICatalogClient, DummyCatalogClient>();
 services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 services.AddScoped<IGeoClient, GeoClient>();
 
+// implementations
+services.AddScoped<ISignInManager<User>, NonPersistentSingInManager>();
+
 // repositories
 services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IBagSectionRepository, BagSectionRepository>();
 services.AddScoped<IBagContentRepository, BagContentRepository>();
 
 // services
+services.AddScoped<IAccountService, AccountService>();
 services.AddScoped<ICatalogService, CatalogService>();
 services.AddScoped<IBagService, BagService>();
 services.AddScoped<IVendingService, VendingService>();
