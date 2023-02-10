@@ -3,6 +3,8 @@
 public interface IAccountService
 {
     public Task<RegisterResult> RegisterAsync(NewUser newUser);
+
+    public Task<LoginResult> LoginAsync(LoginDetails loginDetails);
 }
 
 public record RegisterResult
@@ -31,3 +33,17 @@ public record RegisterResult
 public record RegisterError(string Description);
 
 public record NewUser(string Login, string City, string Password);
+
+public record LoginResult
+{
+    private static readonly LoginResult Success = new() { Succeeded = true };
+    private static readonly LoginResult Failed = new() { Succeeded = false };
+
+    public bool Succeeded { get; protected init; }
+
+    public static LoginResult SuccessResult() => Success;
+
+    public static LoginResult FailedResult() => Failed;
+}
+
+public record LoginDetails(string Login, string Password);

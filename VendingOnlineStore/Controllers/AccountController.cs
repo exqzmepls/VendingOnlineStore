@@ -1,9 +1,11 @@
 ﻿using Core.Services.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Account;
 
 namespace VendingOnlineStore.Controllers;
 
+[AllowAnonymous]
 public class AccountController : Controller
 {
     private readonly IAccountService _accountService;
@@ -27,7 +29,7 @@ public class AccountController : Controller
 
         if (registerResult.Succeeded)
         {
-            return RedirectToAction("Index", "Home");
+            return SuccessRedirect();
         }
 
         foreach (var error in registerResult.Errors)
@@ -38,6 +40,39 @@ public class AccountController : Controller
         return View(model);
     }
 
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> LoginAsync(LoginViewModel model)
+    {
+        var loginDetails = MapToLoginDetails(model);
+        var loginResult = await _accountService.LoginAsync(loginDetails);
+
+        if (loginResult.Succeeded)
+        {
+            return SuccessRedirect();
+        }
+
+        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Manage()
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpGet]
+    public IActionResult Logout()
+    {
+        throw new NotImplementedException();
+    }
+
     private static NewUser MapToNewUser(RegisterViewModel registerViewModel)
     {
         var newUser = new NewUser(
@@ -46,5 +81,19 @@ public class AccountController : Controller
             registerViewModel.Password
         );
         return newUser;
+    }
+
+    private static LoginDetails MapToLoginDetails(LoginViewModel loginViewModel)
+    {
+        var loginDetails = new LoginDetails(
+            loginViewModel.Login,
+            loginViewModel.Password
+        );
+        return loginDetails;
+    }
+
+    private RedirectToActionResult SuccessRedirect()
+    {
+        return RedirectToAction("Index", "Home");
     }
 }

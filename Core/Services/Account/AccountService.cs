@@ -30,7 +30,7 @@ public class AccountService : IAccountService
 
         if (identityResult.Succeeded)
         {
-            _logger.LogInformation("User created a new account with password.");
+            _logger.LogInformation("User created a new account with password");
 
             await _signInManager.SignInAsync(user);
 
@@ -39,6 +39,17 @@ public class AccountService : IAccountService
 
         var errors = identityResult.Errors.Select(e => new RegisterError(e.Description));
         return RegisterResult.FailedResult(errors);
+    }
+
+    public async Task<LoginResult> LoginAsync(LoginDetails loginDetails)
+    {
+        var signInResult = await _signInManager.PasswordSignInAsync(loginDetails.Login, loginDetails.Password);
+
+        if (!signInResult.Succeeded)
+            return LoginResult.FailedResult();
+
+        _logger.LogInformation("User logged in");
+        return LoginResult.SuccessResult();
     }
 
     private static User CreateUser(string city)

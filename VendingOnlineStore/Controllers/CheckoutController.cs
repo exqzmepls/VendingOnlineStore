@@ -1,10 +1,12 @@
 ﻿using Core.Extensions;
 using Core.Services.Checkout;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Checkout;
 
 namespace VendingOnlineStore.Controllers;
 
+[Authorize]
 public class CheckoutController : Controller
 {
     private readonly ICheckoutService _checkoutService;

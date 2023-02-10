@@ -1,10 +1,12 @@
 ﻿using Core.Clients.Payment;
 using Core.Services.Bag;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Bag;
 
 namespace VendingOnlineStore.Controllers;
 
+[Authorize]
 public class BagController : Controller
 {
     private readonly IBagService _bagService;

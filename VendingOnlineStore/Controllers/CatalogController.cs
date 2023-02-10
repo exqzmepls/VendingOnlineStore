@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Services.Catalog;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Catalog;
 
 namespace VendingOnlineStore.Controllers;
 
+[Authorize]
 public class CatalogController : Controller
 {
     private readonly ICatalogService _catalogService;
