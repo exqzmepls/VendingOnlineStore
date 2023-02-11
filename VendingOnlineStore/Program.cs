@@ -9,10 +9,12 @@ using Core.Identity;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
+using Core.Repositories.User;
 using Core.Services.Account;
 using Core.Services.Bag;
 using Core.Services.Catalog;
 using Core.Services.Checkout;
+using Core.Services.Manage;
 using Core.Services.Order;
 using Core.Services.Vending;
 using Infrastructure;
@@ -31,6 +33,8 @@ services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSt
 
 // identity
 services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<AppDbContext>();
+services.AddScoped<ISignInManager<User>, MicrosoftSingInManager>();
+services.AddScoped<IUserManager, MicrosoftUserManager>();
 
 // clients
 services.AddSingleton<IVendingClient, DummyVendingClient>();
@@ -41,21 +45,24 @@ services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 services.AddScoped<IGeoClient, GeoClient>();
 
 // implementations
-services.AddScoped<ISignInManager<User>, MicrosoftSingInManager>();
+
 
 // repositories
+services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IOrderRepository, OrderRepository>();
 services.AddScoped<IBagSectionRepository, BagSectionRepository>();
 services.AddScoped<IBagContentRepository, BagContentRepository>();
 
 // services
 services.AddScoped<IAccountService, AccountService>();
+services.AddScoped<IManageService, ManageService>();
 services.AddScoped<ICatalogService, CatalogService>();
 services.AddScoped<IBagService, BagService>();
 services.AddScoped<IVendingService, VendingService>();
 services.AddScoped<ICheckoutService, CheckoutService>();
 services.AddScoped<IOrderService, OrderService>();
 
+services.AddHttpContextAccessor();
 services.AddControllersWithViews();
 
 var app = builder.Build();

@@ -61,12 +61,6 @@ public class AccountController : Controller
         return View(model);
     }
 
-    [HttpGet]
-    public IActionResult Manage()
-    {
-        throw new NotImplementedException();
-    }
-
     [HttpPost]
     public async Task<IActionResult> Logout()
     {
