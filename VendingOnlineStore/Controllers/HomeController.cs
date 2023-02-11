@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using VendingOnlineStore.Models;
 
 namespace VendingOnlineStore.Controllers;
 
+[AllowAnonymous]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -13,11 +15,13 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    [HttpGet]
     public IActionResult Index()
     {
         return RedirectToAction("Index", "Catalog");
     }
 
+    [HttpGet]
     public IActionResult Privacy()
     {
         return View();

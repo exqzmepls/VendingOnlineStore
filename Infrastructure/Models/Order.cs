@@ -14,6 +14,10 @@ public class Order
 
     public int? ReleaseCode { get; set; }
 
+    public Guid UserId { get; set; }
+
+    public User? User { get; set; }
+
     public Payment? Payment { get; set; }
 
     public OrderPickupPoint? OrderPickupPoint { get; set; }

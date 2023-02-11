@@ -9,5 +9,9 @@ public class BagSection
 
     public string PickupPointId { get; set; } = null!;
 
+    public Guid UserId { get; set; }
+
+    public User? User { get; set; }
+
     public IReadOnlyCollection<BagContent>? BagContents { get; set; }
 }

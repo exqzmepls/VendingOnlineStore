@@ -1,0 +1,12 @@
+﻿@using VendingOnlineStore.Models.Manage
+@model UpdateProfileViewModel
+
+<form asp-controller="Manage" asp-action="UpdateProfile" id="update-profile-form" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+    <div class="form-floating mb-3">
+        <input asp-for="City" class="form-control" placeholder="Please enter your city."/>
+        <label asp-for="City" class="form-label"></label>
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+    <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+</form>

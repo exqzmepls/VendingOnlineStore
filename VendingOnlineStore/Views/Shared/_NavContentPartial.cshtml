@@ -1,0 +1,61 @@
+﻿@{
+    var isAuthenticated = User.Identity!.IsAuthenticated;
+}
+
+<div class="d-flex justify-content-start">
+    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VendingOnlineStore</a>
+    @if (isAuthenticated)
+    {
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    }
+</div>
+@if (isAuthenticated)
+{
+    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+        <ul class="navbar-nav flex-grow-1">
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="Catalog" asp-action="Index">Shop</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-dark" asp-controller="VendingMachine" asp-action="Index">Vending machines</a>
+            </li>
+        </ul>
+    </div>
+    <div class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Bag" asp-action="Index">
+            <i class="fa-solid fa-cart-shopping"></i> Bag
+        </a>
+    </div>
+    <div class="nav-item dropdown">
+        <a class="nav-link text-dark dropdown-toggle" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
+        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+            <li>
+                <a class="dropdown-item" asp-controller="Manage" asp-action="Index">Manage</a>
+            </li>
+            <li>
+                <a class="dropdown-item" asp-controller="Order" asp-action="Index">Orders</a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <input type="submit" class="dropdown-item" value="Sign Out"/>
+                </form>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="d-flex justify-content-end">
+        <div class="nav-item">
+            <a class="nav-link text-dark" id="register" asp-controller="Account" asp-action="Register">Sign Up</a>
+        </div>
+        <div class="nav-item">
+            <a class="nav-link text-dark" id="login" asp-controller="Account" asp-action="Login">Sign In</a>
+        </div>
+    </div>
+}

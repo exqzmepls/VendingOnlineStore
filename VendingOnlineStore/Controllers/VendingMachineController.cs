@@ -1,9 +1,11 @@
 ﻿using Core.Services.Vending;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models;
 
 namespace VendingOnlineStore.Controllers;
 
+[Authorize]
 public class VendingMachineController : Controller
 {
     private readonly IVendingService _vendingService;

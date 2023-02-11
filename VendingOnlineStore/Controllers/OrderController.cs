@@ -1,5 +1,6 @@
 ﻿using Core.Extensions;
 using Core.Services.Order;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VendingOnlineStore.Models.Order;
 using OrderStatus = VendingOnlineStore.Models.Order.OrderStatus;
@@ -7,6 +8,7 @@ using Status = Core.Services.Order.OrderStatus;
 
 namespace VendingOnlineStore.Controllers;
 
+[Authorize]
 public class OrderController : Controller
 {
     private readonly IOrderService _orderService;

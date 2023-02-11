@@ -12,34 +12,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
-            <div class="d-flex justify-content-start">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VendingOnlineStore</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="VendingMachine" asp-action="Index">Vending machines</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="Index">Orders</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="nav-item">
-                <a class="nav-link text-dark" asp-area="" asp-controller="Bag" asp-action="Index">
-                    <i class="fa-solid fa-cart-shopping"></i> Bag
-                </a>
-            </div>
+            <partial name="_NavContentPartial"/>
         </div>
     </nav>
 </header>
@@ -51,7 +24,7 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2022 - VendingOnlineStore - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        &copy; 2023 - Vending Online Store
     </div>
 </footer>
 <script src="https://kit.fontawesome.com/70dadb8a4b.js" crossorigin="anonymous"></script>
