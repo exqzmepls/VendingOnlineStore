@@ -5,6 +5,8 @@ public interface IAccountService
     public Task<RegisterResult> RegisterAsync(NewUser newUser);
 
     public Task<LoginResult> LoginAsync(LoginDetails loginDetails);
+
+    public Task LogoutAsync();
 }
 
 public record RegisterResult

@@ -67,10 +67,11 @@ public class AccountController : Controller
         throw new NotImplementedException();
     }
 
-    [HttpGet]
-    public IActionResult Logout()
+    [HttpPost]
+    public async Task<IActionResult> Logout()
     {
-        throw new NotImplementedException();
+        await _accountService.LogoutAsync();
+        return SuccessRedirect();
     }
 
     private static NewUser MapToNewUser(RegisterViewModel registerViewModel)

@@ -1,15 +1,15 @@
-﻿using Core.AppInterfaces;
+﻿using Core.Identity;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
-using SignInResult = Core.AppInterfaces.SignInResult;
+using SignInResult = Core.Identity.SignInResult;
 
-namespace VendingOnlineStore.Implementations;
+namespace VendingOnlineStore.Identity;
 
-public class NonPersistentSingInManager : ISignInManager<User>
+public class MicrosoftSingInManager : ISignInManager<User>
 {
     private readonly SignInManager<User> _signInManager;
 
-    public NonPersistentSingInManager(SignInManager<User> signInManager)
+    public MicrosoftSingInManager(SignInManager<User> signInManager)
     {
         _signInManager = signInManager;
     }
@@ -23,5 +23,10 @@ public class NonPersistentSingInManager : ISignInManager<User>
     {
         var signInResult = await _signInManager.PasswordSignInAsync(login, password, false, false);
         return signInResult.Succeeded ? SignInResult.SuccessResult() : SignInResult.FailedResult();
+    }
+
+    public async Task SignOutAsync()
+    {
+        await _signInManager.SignOutAsync();
     }
 }

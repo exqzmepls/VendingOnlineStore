@@ -1,9 +1,10 @@
-﻿namespace Core.AppInterfaces;
+﻿namespace Core.Identity;
 
 public interface ISignInManager<in TUser> where TUser : class
 {
     public Task SignInAsync(TUser user);
     public Task<SignInResult> PasswordSignInAsync(string login, string password);
+    public Task SignOutAsync();
 }
 
 public record SignInResult

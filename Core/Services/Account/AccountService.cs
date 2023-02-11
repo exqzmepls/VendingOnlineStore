@@ -1,4 +1,4 @@
-﻿using Core.AppInterfaces;
+﻿using Core.Identity;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -50,6 +50,12 @@ public class AccountService : IAccountService
 
         _logger.LogInformation("User logged in");
         return LoginResult.SuccessResult();
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
+        _logger.LogInformation("User logged out");
     }
 
     private static User CreateUser(string city)
