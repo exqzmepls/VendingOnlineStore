@@ -14,6 +14,7 @@ public interface IBagSectionRepository
 public record BagSectionDetailsData
 {
     public required Guid Id { get; init; }
+    public required Guid UserId { get; init; }
     public required string PickupPointId { get; init; }
     public required IReadOnlyCollection<BagContentBriefData> Contents { get; init; }
 }
@@ -25,7 +26,7 @@ public record BagContentBriefData
     public required int Count { get; init; }
 }
 
-public record NewBagSectionData(string PickupPointId, IEnumerable<NewBagSectionContentData> Contents);
+public record NewBagSectionData(Guid UserId, string PickupPointId, IEnumerable<NewBagSectionContentData> Contents);
 
 public record NewBagSectionContentData(string ItemId, int Count);
 

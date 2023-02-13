@@ -15,9 +15,12 @@ public class MicrosoftUserManager : IUserManager
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<UserDetails?> GetUserAsync()
+    public async Task<UserDetails?> GetUserOrDefaultAsync()
     {
-        var principal = _httpContextAccessor.HttpContext!.User;
+        var principal = _httpContextAccessor.HttpContext?.User;
+        if (principal == default)
+            return default;
+
         var user = await _userManager.GetUserAsync(principal);
         if (user == default)
             return default;
@@ -26,10 +29,10 @@ public class MicrosoftUserManager : IUserManager
         return userDetails;
     }
 
+
     private static UserDetails MapToUserDetails(User user)
     {
         var userDetails = new UserDetails(
-            user.Id,
             user.UserName!,
             user.City
         );

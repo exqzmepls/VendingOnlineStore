@@ -102,6 +102,7 @@ public class BagContentRepository : IBagContentRepository
     {
         var bagSectionBriefData = new BagSectionBriefData(
             bagSectionEntity.Id,
+            bagSectionEntity.UserId,
             bagSectionEntity.PickupPointId
         );
         return bagSectionBriefData;

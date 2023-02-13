@@ -6,17 +6,23 @@ namespace Core.Services.Manage;
 public class ManageService : IManageService
 {
     private readonly IUserManager _userManager;
+    private readonly IUserIdentityProvider _userIdentityProvider;
     private readonly IUserRepository _userRepository;
 
-    public ManageService(IUserManager userManager, IUserRepository userRepository)
+    public ManageService(
+        IUserManager userManager,
+        IUserIdentityProvider userIdentityProvider,
+        IUserRepository userRepository
+    )
     {
         _userManager = userManager;
+        _userIdentityProvider = userIdentityProvider;
         _userRepository = userRepository;
     }
 
     public async Task<Profile?> GetProfileOrDefaultAsync()
     {
-        var user = await _userManager.GetUserAsync();
+        var user = await _userManager.GetUserOrDefaultAsync();
         if (user == default)
             return default;
 
@@ -29,13 +35,9 @@ public class ManageService : IManageService
 
     public async Task<UpdateResult> UpdateProfileAsync(ProfileUpdate update)
     {
-        var user = await _userManager.GetUserAsync();
-        if (user == default)
-            return UpdateResult.FailedResult();
-
-        var userId = user.id;
         try
         {
+            var userId = _userIdentityProvider.GetUserIdentifier();
             await _userRepository.UpdateCityAsync(userId, update.City);
         }
         catch

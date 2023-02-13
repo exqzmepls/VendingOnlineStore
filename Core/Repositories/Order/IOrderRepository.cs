@@ -14,6 +14,7 @@ public interface IOrderRepository
 public record OrderBriefData
 {
     public required Guid Id { get; init; }
+    public required Guid UserId { get; init; }
     public required DateTime CreationDateUtc { get; init; }
     public required OrderStatusData Status { get; init; }
     public required string PaymentId { get; init; }
@@ -23,8 +24,8 @@ public record OrderBriefData
 public record OrderDetailsData
 {
     public required Guid Id { get; init; }
+    public required Guid UserId { get; init; }
     public required DateTime CreationDateUtc { get; init; }
-    public required string BookingId { get; init; }
     public required OrderStatusData Status { get; init; }
     public required OrderPaymentData Payment { get; init; }
     public required int? ReleaseCode { get; init; }
@@ -50,6 +51,7 @@ public record OrderPaymentData
 
 public record NewOrderData
 {
+    public required Guid UserId { get; init; }
     public required string BookingId { get; init; }
     public required OrderPaymentData Payment { get; init; }
     public required OrderPickupPointData PickupPoint { get; init; }

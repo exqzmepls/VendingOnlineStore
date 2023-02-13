@@ -2,7 +2,7 @@
 
 public interface IUserManager
 {
-    public Task<UserDetails?> GetUserAsync();
+    public Task<UserDetails?> GetUserOrDefaultAsync();
 }
 
-public record UserDetails(Guid id, string Login, string City);
+public record UserDetails(string Login, string City);

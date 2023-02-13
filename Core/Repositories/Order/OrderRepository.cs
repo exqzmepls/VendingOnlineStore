@@ -74,6 +74,7 @@ public class OrderRepository : IOrderRepository
         var contents = newOrder.Contents.Select(MapToContentEntity).ToReadOnlyCollection();
         var orderEntity = new OrderEntity
         {
+            UserId = newOrder.UserId,
             BookingId = newOrder.BookingId,
             CreationDateUtc = DateTime.UtcNow,
             Status = OrderStatus.WaitingPayment,
@@ -129,14 +130,14 @@ public class OrderRepository : IOrderRepository
         var orderDetails = new OrderDetailsData
         {
             Id = order.Id,
+            UserId = order.UserId,
             CreationDateUtc = order.CreationDateUtc,
-            BookingId = order.BookingId,
             Status = status,
             Payment = payment,
             ReleaseCode = order.ReleaseCode,
             PickupPoint = pickupPoint,
             Contents = contents,
-            TotalPrice = order.TotalPrice
+            TotalPrice = order.TotalPrice,
         };
         return orderDetails;
     }
