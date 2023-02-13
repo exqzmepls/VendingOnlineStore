@@ -1,5 +1,6 @@
 ﻿using Core.Clients.Catalog;
 using Core.Extensions;
+using Core.Identity;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
 using Core.Services.Catalog.Exceptions;
@@ -11,20 +12,30 @@ public class CatalogService : ICatalogService
     private readonly ICatalogClient _catalogClient;
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IBagContentRepository _bagContentRepository;
+    private readonly IUserIdentityProvider _userIdentityProvider;
 
-    public CatalogService(ICatalogClient catalogClient, IBagSectionRepository bagSectionRepository,
-        IBagContentRepository bagContentRepository)
+    public CatalogService(
+        ICatalogClient catalogClient,
+        IBagSectionRepository bagSectionRepository,
+        IBagContentRepository bagContentRepository,
+        IUserIdentityProvider userIdentityProvider
+    )
     {
         _catalogClient = catalogClient;
         _bagSectionRepository = bagSectionRepository;
         _bagContentRepository = bagContentRepository;
+        _userIdentityProvider = userIdentityProvider;
     }
 
     public IReadOnlyCollection<OptionDetails> GetOptions(string city)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var options = _catalogClient.GetOptions(city);
 
-        var bagSections = _bagSectionRepository.GetAll().ToReadOnlyCollection();
+        var bagSections = _bagSectionRepository.GetAll()
+            .Where(s => s.UserId == userId)
+            .ToReadOnlyCollection();
 
         var result = GetOptionsDetails(options, bagSections).ToReadOnlyCollection();
         return result;
@@ -148,7 +159,10 @@ public class CatalogService : ICatalogService
 
     private async Task<Guid> AddNewBagContentAsync(string pickupPointId, string itemId)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var section = _bagSectionRepository.GetAll()
+            .Where(s => s.UserId == userId)
             .SingleOrDefault(s => s.PickupPointId == pickupPointId);
 
         const int initialContentCount = 1;
@@ -158,7 +172,7 @@ public class CatalogService : ICatalogService
             {
                 new(itemId, initialContentCount)
             };
-            var newBagSection = new NewBagSectionData(pickupPointId, newContents);
+            var newBagSection = new NewBagSectionData(userId, pickupPointId, newContents);
             var newBagSectionBriefData = await _bagSectionRepository.CreateAsync(newBagSection);
             var singleBagContentId = newBagSectionBriefData.ContentsIds.Single();
             return singleBagContentId;
@@ -171,8 +185,10 @@ public class CatalogService : ICatalogService
 
     private async Task<BagEntrance?> GetBagEntranceAsync(Guid bagContentId)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var bagContentData = await _bagContentRepository.GetOrDefaultAsync(bagContentId);
-        if (bagContentData == default)
+        if (bagContentData == default || bagContentData.Section.UserId != userId)
             return default;
 
         var bagEntrance = new BagEntrance(bagContentData.Id, bagContentData.Count);
@@ -181,8 +197,10 @@ public class CatalogService : ICatalogService
 
     private async Task<BagContentDetailsData> GetBagContentDetailsDataAsync(Guid id)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var bagContentDetailsData = await _bagContentRepository.GetOrDefaultAsync(id);
-        if (bagContentDetailsData == default)
+        if (bagContentDetailsData == default || bagContentDetailsData.Section.UserId != userId)
         {
             throw new ContentNotFoundException("Content does not exist.");
         }

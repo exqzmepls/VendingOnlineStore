@@ -1,5 +1,6 @@
 ﻿using Core.Clients.PickupPoint;
 using Core.Extensions;
+using Core.Identity;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
 using Core.Services.Bag.Exceptions;
@@ -12,13 +13,19 @@ public class BagService : IBagService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IBagContentRepository _bagContentRepository;
+    private readonly IUserIdentityProvider _userIdentityProvider;
     private readonly IPickupPointClient _pickupPointClient;
 
-    public BagService(IBagSectionRepository bagSectionRepository, IBagContentRepository bagContentRepository,
-        IPickupPointClient pickupPointClient)
+    public BagService(
+        IBagSectionRepository bagSectionRepository,
+        IBagContentRepository bagContentRepository,
+        IUserIdentityProvider userIdentityProvider,
+        IPickupPointClient pickupPointClient
+    )
     {
         _bagSectionRepository = bagSectionRepository;
         _bagContentRepository = bagContentRepository;
+        _userIdentityProvider = userIdentityProvider;
         _pickupPointClient = pickupPointClient;
     }
 
@@ -38,8 +45,12 @@ public class BagService : IBagService
 
     public async Task<IReadOnlyCollection<BagSection>> GetSectionsAsync()
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         // get sections data
-        var bagSectionsData = _bagSectionRepository.GetAll().ToReadOnlyCollection();
+        var bagSectionsData = _bagSectionRepository.GetAll()
+            .Where(s => s.UserId == userId)
+            .ToReadOnlyCollection();
 
         var isEmpty = !bagSectionsData.Any();
         if (isEmpty)
@@ -158,8 +169,10 @@ public class BagService : IBagService
 
     private async Task<BagContentDetailsData> GetBagContentDetailsDataAsync(Guid id)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var bagContentDetailsData = await _bagContentRepository.GetOrDefaultAsync(id);
-        if (bagContentDetailsData == default)
+        if (bagContentDetailsData == default || bagContentDetailsData.Section.UserId != userId)
         {
             throw new ContentNotFoundException("Content does not exist.");
         }

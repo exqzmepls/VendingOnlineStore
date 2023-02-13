@@ -1,6 +1,7 @@
 ﻿using Core.Clients.Booking;
 using Core.Clients.Payment;
 using Core.Extensions;
+using Core.Identity;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
 
@@ -10,22 +11,34 @@ public class OrderService : IOrderService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IOrderRepository _orderRepository;
+    private readonly IUserIdentityProvider _userIdentityProvider;
     private readonly IBookingClient _bookingClient;
     private readonly IPaymentClient _paymentClient;
 
-    public OrderService(IBagSectionRepository bagSectionRepository, IOrderRepository orderRepository,
-        IBookingClient bookingClient, IPaymentClient paymentClient)
+    public OrderService(
+        IBagSectionRepository bagSectionRepository,
+        IOrderRepository orderRepository,
+        IUserIdentityProvider userIdentityProvider,
+        IBookingClient bookingClient,
+        IPaymentClient paymentClient
+    )
     {
         _bagSectionRepository = bagSectionRepository;
         _orderRepository = orderRepository;
+        _userIdentityProvider = userIdentityProvider;
         _bookingClient = bookingClient;
         _paymentClient = paymentClient;
     }
 
     public OrderDetails? GetByIdOrDefault(Guid id)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var order = _orderRepository.GetByIdOrDefault(id);
         if (order == default)
+            return default;
+
+        if (order.UserId != userId)
             return default;
 
         var orderDetails = MapToOrderDetails(order);
@@ -34,7 +47,10 @@ public class OrderService : IOrderService
 
     public IQueryable<OrderBrief> GetAll()
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var result = _orderRepository.GetAll()
+            .Where(o => o.UserId == userId)
             .OrderByDescending(o => o.CreationDateUtc)
             .MapToOrderBrief();
         return result;
@@ -42,6 +58,8 @@ public class OrderService : IOrderService
 
     public async Task<string> CreateAsync(NewOrder newOrder)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         var bagSectionId = newOrder.BagSectionId;
         var bagSectionData = await GetBagSectionDataAsync(bagSectionId);
 
@@ -97,6 +115,7 @@ public class OrderService : IOrderService
         });
         var newOrderData = new NewOrderData
         {
+            UserId = userId,
             BookingId = bookingDetails.Id,
             Payment = orderPayment,
             PickupPoint = orderPickupPoint,

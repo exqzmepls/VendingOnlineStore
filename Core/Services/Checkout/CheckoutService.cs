@@ -1,5 +1,6 @@
 ﻿using Core.Clients.PickupPoint;
 using Core.Extensions;
+using Core.Identity;
 using Core.Repositories.BagSection;
 
 namespace Core.Services.Checkout;
@@ -7,19 +8,27 @@ namespace Core.Services.Checkout;
 public class CheckoutService : ICheckoutService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
+    private readonly IUserIdentityProvider _userIdentityProvider;
     private readonly IPickupPointClient _pickupPointClient;
 
-    public CheckoutService(IBagSectionRepository bagSectionRepository, IPickupPointClient pickupPointClient)
+    public CheckoutService(
+        IBagSectionRepository bagSectionRepository,
+        IUserIdentityProvider userIdentityProvider,
+        IPickupPointClient pickupPointClient
+    )
     {
         _bagSectionRepository = bagSectionRepository;
+        _userIdentityProvider = userIdentityProvider;
         _pickupPointClient = pickupPointClient;
     }
 
     public async Task<CheckoutDetails?> GetCheckoutOrDefaultAsync(Guid bagSectionId)
     {
+        var userId = _userIdentityProvider.GetUserIdentifier();
+
         // get section contents
         var bagSectionData = await _bagSectionRepository.GetByIdOrDefaultAsync(bagSectionId);
-        if (bagSectionData == default)
+        if (bagSectionData == default || bagSectionData.UserId != userId)
         {
             return default;
         }

@@ -13,7 +13,7 @@ public interface IBagContentRepository
 
 public record BagContentDetailsData(Guid Id, BagSectionBriefData Section, string ItemId, int Count);
 
-public record BagSectionBriefData(Guid Id, string PickupPointId);
+public record BagSectionBriefData(Guid Id, Guid UserId, string PickupPointId);
 
 public record BagContentUpdate(int NewCount);
 

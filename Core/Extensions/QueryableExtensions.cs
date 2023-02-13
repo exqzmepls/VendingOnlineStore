@@ -1,4 +1,5 @@
-﻿using Core.Repositories.Order;
+﻿using Core.Repositories.BagSection;
+using Core.Repositories.Order;
 using Core.Services.Order;
 using Infrastructure.Models;
 
@@ -21,10 +22,27 @@ public static class QueryableExtensions
         return source.Select(order => new OrderBriefData
         {
             Id = order.Id,
+            UserId = order.UserId,
             CreationDateUtc = order.CreationDateUtc,
             Status = order.Status.MapToOrderStatusData(),
             PaymentId = order.Payment!.ExternalId,
             BookingId = order.BookingId
+        });
+    }
+
+    public static IQueryable<BagSectionDetailsData> MapToBagSectionDetailsData(this IQueryable<BagSection> source)
+    {
+        return source.Select(bagSection => new BagSectionDetailsData
+        {
+            Id = bagSection.Id,
+            UserId = bagSection.UserId,
+            PickupPointId = bagSection.PickupPointId,
+            Contents = bagSection.BagContents!.Select(bagContent => new BagContentBriefData
+            {
+                Id = bagContent.Id,
+                ItemId = bagContent.ItemId,
+                Count = bagContent.Count
+            }).ToReadOnlyCollection()
         });
     }
 }

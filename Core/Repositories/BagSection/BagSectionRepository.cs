@@ -26,6 +26,7 @@ public class BagSectionRepository : IBagSectionRepository
             .ToReadOnlyCollection();
         var bagSection = new BagSectionEntity
         {
+            UserId = newBagSection.UserId,
             PickupPointId = newBagSection.PickupPointId,
             BagContents = bagContents
         };
@@ -69,18 +70,7 @@ public class BagSectionRepository : IBagSectionRepository
     {
         var result = _appDbContext.BagSections
             .Include(s => s.BagContents)
-            .Select(bagSection => new BagSectionDetailsData // todo to extensions
-            {
-                Id = bagSection.Id,
-                PickupPointId = bagSection.PickupPointId,
-                Contents = bagSection.BagContents!.Select(bagContent => new BagContentBriefData
-                    {
-                        Id = bagContent.Id,
-                        ItemId = bagContent.ItemId,
-                        Count = bagContent.Count
-                    })
-                    .ToReadOnlyCollection()
-            });
+            .MapToBagSectionDetailsData();
         return result;
     }
 
@@ -105,6 +95,7 @@ public class BagSectionRepository : IBagSectionRepository
         var bagSectionDetailsData = new BagSectionDetailsData
         {
             Id = bagSectionEntity.Id,
+            UserId = bagSectionEntity.UserId,
             PickupPointId = bagSectionEntity.PickupPointId,
             Contents = contents
         };

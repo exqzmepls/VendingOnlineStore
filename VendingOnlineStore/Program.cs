@@ -35,6 +35,7 @@ services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionSt
 services.AddIdentity<User, IdentityRole<Guid>>().AddEntityFrameworkStores<AppDbContext>();
 services.AddScoped<ISignInManager<User>, MicrosoftSingInManager>();
 services.AddScoped<IUserManager, MicrosoftUserManager>();
+services.AddScoped<IUserIdentityProvider, HttpContextUserIdentityProvider>();
 
 // clients
 services.AddSingleton<IVendingClient, DummyVendingClient>();
@@ -43,8 +44,6 @@ services.AddSingleton<IBookingClient, DummyBookingClient>();
 services.AddSingleton<ICatalogClient, DummyCatalogClient>();
 services.AddSingleton<IPaymentClient, YandexPaymentClient>();
 services.AddScoped<IGeoClient, GeoClient>();
-
-// implementations
 
 
 // repositories
