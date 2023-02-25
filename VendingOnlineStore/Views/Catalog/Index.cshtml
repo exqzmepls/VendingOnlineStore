@@ -6,6 +6,10 @@
 }
 
 <h1>Shop</h1>
+
+<hr/>
+<partial name="_Map"/>
+
 <hr/>
 <div class="row">
     @foreach (var option in Model)
@@ -21,4 +25,6 @@
 @section Scripts
 {
     <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=1baee111-cbde-4534-abab-63573b581ba4" type="text/javascript"></script>
+    <script src="js/yamaps.js" type="text/javascript"></script>
 }

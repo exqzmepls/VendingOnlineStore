@@ -1,0 +1,27 @@
+﻿<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    Map
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>Set location</h1>
+                <button class="btn btn-secondary">Use my geoposition</button>
+            </div>
+            <div class="modal-body">
+                <div id="map" style="height: 50vh"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                <form method="get">
+                    <input id="lat" type="hidden" name="lat"/>
+                    <input id="lon" type="hidden" name="lon"/>
+                    <input id="radius" type="hidden" name="radius"/>
+                    <input type="submit" class="btn btn-primary" onclick="applyLocation()" value="Apply location"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
