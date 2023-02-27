@@ -1,38 +1,51 @@
-﻿var map;
-var circle;
+﻿let map;
+let circle;
 
 ymaps.ready(init);
 
 function init() {
-    const center = getCenter();
+    const center = getInitialCenter();
 
     map = createMap(center);
+    console.log("map created");
 
     const locationButton = createLocationButton();
     map.controls.add(locationButton);
+    console.log("btn added");
 
-    const radius = getRadius();
+    const radius = getInitialRadius();
+    console.log(radius);
     circle = createCircle(center, radius);
-
     map.geoObjects.add(circle);
+    console.log("circle added");
 
     circle.editor.startEditing();
 
     // получаем центр карты/начального круга
     // если есть доступ к геолокации, то геолокация
     // иначе центр города
-    function getCenter() {
-        return [55.76, 37.64];
+    function getInitialCenter() {
+        const lat = getFloat("#lat");
+        console.log(lat);
+        const lon = getFloat("#lon");
+        console.log(lon);
+        return [lat, lon];
+
+        function getFloat(tag) {
+            const value = $(tag)[0].value;
+            const parsableValue = value.replace(",", ".");
+            return parseFloat(parsableValue);
+        }
     }
 
-    function getRadius() {
-        return 1000;
+    function getInitialRadius() {
+        return parseInt($("#radius")[0].value);
     }
 
     function createMap(center) {
         return new ymaps.Map('map', {
             center: center,
-            zoom: 9,
+            zoom: 15,
             controls: [
                 'rulerControl',
                 'searchControl',
@@ -49,7 +62,7 @@ function init() {
     function createLocationButton() {
         return new ymaps.control.Button({
             data: {
-                content: "Location"
+                content: "Set as Geolocation"
             },
             options: {
                 maxWidth: [28, 150, 178]
@@ -67,12 +80,16 @@ function init() {
     }
 }
 
-function applyLocation() {
-    const coords = circle.coordinates;
+function onApplyLocation() {
+    const geometry = circle.geometry;
+    const coords = geometry.getCoordinates();
     const lat = coords[0];
     const lon = coords[1];
-    const radius = circle.radius;
-    $("#lat").value = lat;
-    $("#lon").value = lon;
-    $("#radius").value = radius;
+    const radius = geometry.getRadius();
+    console.log(lat);
+    console.log(lon);
+    console.log(radius);
+    $("#lat")[0].value = lat;
+    $("#lon")[0].value = lon;
+    $("#radius")[0].value = radius;
 }

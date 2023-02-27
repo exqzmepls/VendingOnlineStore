@@ -17,12 +17,21 @@ public class CatalogController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index([FromQuery] string city = "Perm")
+    public IActionResult Index()
     {
-        var options = _catalogService.GetOptions(city);
+        var defaultLocation = _catalogService.GetDefaultLocation();
+        var model = MapToMapViewModel(defaultLocation);
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult Options([FromQuery, Required] LocationQuery locationQuery)
+    {
+        var location = new Location(locationQuery.Latitude, locationQuery.Longitude, locationQuery.Radius);
+        var options = _catalogService.GetOptions(location);
 
         var model = options.Select(MapToOptionViewModel);
-        return View(model);
+        return PartialView("_Options", model);
     }
 
     [HttpPost]
@@ -48,6 +57,16 @@ public class CatalogController : Controller
         var bagContent = await _catalogService.DecreaseContentCountAsync(form.Id);
 
         return BagContentPartialView(bagContent, form.Index, form.OptionIndex);
+    }
+
+    private static MapViewModel MapToMapViewModel(Location location)
+    {
+        var mapViewModel = new MapViewModel(
+            location.Latitude,
+            location.Longitude,
+            location.Radius
+        );
+        return mapViewModel;
     }
 
     private static OptionViewModel MapToOptionViewModel(OptionDetails optionDetails, int optionIndex)

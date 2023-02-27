@@ -2,9 +2,7 @@
 
 public interface ICatalogClient
 {
-    public IReadOnlyCollection<Option> GetOptions(string city);
-
-    public IReadOnlyCollection<Option> GetOptions(Place place);
+    public IReadOnlyCollection<Option> GetOptions(LocationData locationData);
 }
 
 public record Option(Item Item, IReadOnlyCollection<Content> Contents);
@@ -15,4 +13,4 @@ public record Content(PickupPoint PickupPoint, decimal Price);
 
 public record PickupPoint(string Id, string Address, string Description);
 
-public record Place(double Latitude, double Longitude, double Radius);
+public record LocationData(double Latitude, double Longitude, double Radius);

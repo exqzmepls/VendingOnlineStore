@@ -2,7 +2,9 @@
 
 public interface ICatalogService
 {
-    public IReadOnlyCollection<OptionDetails> GetOptions(string city);
+    public Location GetDefaultLocation();
+
+    public IReadOnlyCollection<OptionDetails> GetOptions(Location location);
 
     public Task<BagContent> AddToBagAsync(NewBagContent newBagContent);
 
@@ -10,6 +12,8 @@ public interface ICatalogService
 
     public Task<BagContent> DecreaseContentCountAsync(Guid bagContentId);
 }
+
+public record Location(double Latitude, double Longitude, double Radius);
 
 public record OptionDetails(ItemDetails Item, IReadOnlyCollection<ContentDetails> Contents);
 

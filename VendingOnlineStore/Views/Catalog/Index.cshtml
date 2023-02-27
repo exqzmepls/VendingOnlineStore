@@ -1,5 +1,4 @@
-﻿@using VendingOnlineStore.Models.Catalog
-@model IEnumerable<OptionViewModel>
+﻿@model VendingOnlineStore.Models.Catalog.MapViewModel
 
 @{
     ViewData["Title"] = "Shop";
@@ -8,18 +7,11 @@
 <h1>Shop</h1>
 
 <hr/>
-<partial name="_Map"/>
+<partial name="_Map" model="Model"/>
 
 <hr/>
-<div class="row">
-    @foreach (var option in Model)
-    {
-        <div class="col-12 col-md-6">
-            @{
-                await Html.RenderPartialAsync("_Option", option);
-            }
-        </div>
-    }
+<div id="options" class="row">
+    Select Location to Get Items
 </div>
 
 @section Scripts
