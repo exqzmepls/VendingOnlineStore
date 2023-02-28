@@ -1,0 +1,59 @@
+﻿@using VendingOnlineStore.Models.Catalog
+@model CatalogViewModel
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<div class="row">
+    <div class="col-6">
+        <h1>Shop</h1>
+    </div>
+    <div class="col-6 d-flex justify-content-end align-items-center">
+        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#locationModal">
+            Select Location
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="locationModal" tabindex="-1" aria-labelledby="locationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>Set location</h1>
+            </div>
+            <div class="modal-body">
+                <partial name="_Map"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                @{
+                    var locationQuery = new LocationQuery
+                    {
+                        Latitude = Model.Map.DefaultLatitude,
+                        Longitude = Model.Map.DefaultLongitude,
+                        Radius = Model.Map.DefaultRadius
+                    };
+                }
+                <partial name="_LocationForm" model="locationQuery"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr/>
+<div id="options" class="row">
+    @foreach (var option in Model.Options)
+    {
+        <div class="col-12 col-md-6">
+            <partial name="_Option" model="option"/>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=1baee111-cbde-4534-abab-63573b581ba4" type="text/javascript"></script>
+    <script src="~/js/yamaps.js" type="text/javascript"></script>
+}

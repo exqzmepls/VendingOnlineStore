@@ -1,22 +1,32 @@
-﻿@model VendingOnlineStore.Models.Catalog.MapViewModel
+@using VendingOnlineStore.Models.Catalog
+@model MapViewModel
 
 @{
     ViewData["Title"] = "Shop";
 }
 
-<h1>Shop</h1>
+<h1>Select Location</h1>
 
 <hr/>
-<partial name="_Map" model="Model"/>
-
-<hr/>
-<div id="options" class="row">
-    Select Location to Get Items
+<div class="row">
+    <div class="col-12 mb-3">
+        <partial name="_Map"/>
+    </div>
+    <div class="col-12 d-flex justify-content-end">
+        @{
+            var locationQuery = new LocationQuery
+            {
+                Latitude = Model.DefaultLatitude,
+                Longitude = Model.DefaultLongitude,
+                Radius = Model.DefaultRadius
+            };
+        }
+        <partial name="_LocationForm" model="locationQuery"/>
+    </div>
 </div>
 
 @section Scripts
 {
-    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
     <script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&amp;apikey=1baee111-cbde-4534-abab-63573b581ba4" type="text/javascript"></script>
-    <script src="js/yamaps.js" type="text/javascript"></script>
+    <script src="~/js/yamaps.js" type="text/javascript"></script>
 }

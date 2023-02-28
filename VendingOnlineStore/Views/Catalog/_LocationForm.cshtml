@@ -1,6 +1,6 @@
-﻿@model VendingOnlineStore.Models.Catalog.LocationQuery
+@model VendingOnlineStore.Models.Catalog.LocationQuery
 
-<form data-ajax="true" data-ajax-method="get" data-ajax-update="#options" asp-controller="Catalog" asp-action="Options">
+<form asp-controller="Catalog" asp-action="Query" method="get">
     <input id="lat" type="hidden" asp-for="Latitude"/>
     <input id="lon" type="hidden" asp-for="Longitude"/>
     <input id="radius" type="hidden" asp-for="Radius"/>

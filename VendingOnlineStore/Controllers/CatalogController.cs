@@ -25,13 +25,15 @@ public class CatalogController : Controller
     }
 
     [HttpGet]
-    public IActionResult Options([FromQuery, Required] LocationQuery locationQuery)
+    public IActionResult Query([FromQuery, Required] LocationQuery locationQuery)
     {
         var location = new Location(locationQuery.Latitude, locationQuery.Longitude, locationQuery.Radius);
         var options = _catalogService.GetOptions(location);
 
-        var model = options.Select(MapToOptionViewModel);
-        return PartialView("_Options", model);
+        var optionsModel = options.Select(MapToOptionViewModel);
+        var mapModel = MapToMapViewModel(location);
+        var model = new CatalogViewModel(mapModel, optionsModel);
+        return View(model);
     }
 
     [HttpPost]
