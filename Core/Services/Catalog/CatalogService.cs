@@ -27,11 +27,6 @@ public class CatalogService : ICatalogService
         _userIdentityProvider = userIdentityProvider;
     }
 
-    public Location GetDefaultLocation()
-    {
-        return new Location(58.009535, 56.224404, 250);
-    }
-
     public IReadOnlyCollection<OptionDetails> GetOptions(Location location)
     {
         var userId = _userIdentityProvider.GetUserIdentifier();

@@ -19,9 +19,7 @@ public class CatalogController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var defaultLocation = _catalogService.GetDefaultLocation();
-        var model = MapToMapViewModel(defaultLocation);
-        return View(model);
+        return View();
     }
 
     [HttpGet]
@@ -31,8 +29,8 @@ public class CatalogController : Controller
         var options = _catalogService.GetOptions(location);
 
         var optionsModel = options.Select(MapToOptionViewModel);
-        var mapModel = MapToMapViewModel(location);
-        var model = new CatalogViewModel(mapModel, optionsModel);
+        var locationModel = MapToLocationViewModel(location);
+        var model = new CatalogViewModel(locationModel, optionsModel);
         return View(model);
     }
 
@@ -61,9 +59,9 @@ public class CatalogController : Controller
         return BagContentPartialView(bagContent, form.Index, form.OptionIndex);
     }
 
-    private static MapViewModel MapToMapViewModel(Location location)
+    private static LocationViewModel MapToLocationViewModel(Location location)
     {
-        var mapViewModel = new MapViewModel(
+        var mapViewModel = new LocationViewModel(
             location.Latitude,
             location.Longitude,
             location.Radius

@@ -2,12 +2,12 @@ namespace VendingOnlineStore.Models.Catalog;
 
 public class CatalogViewModel
 {
-    public CatalogViewModel(MapViewModel map, IEnumerable<OptionViewModel> options)
+    public CatalogViewModel(LocationViewModel location, IEnumerable<OptionViewModel> options)
     {
-        Map = map;
+        Location = location;
         Options = options;
     }
 
-    public MapViewModel Map { get; }
+    public LocationViewModel Location { get; }
     public IEnumerable<OptionViewModel> Options { get; }
 }

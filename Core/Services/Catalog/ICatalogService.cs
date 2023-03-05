@@ -2,8 +2,6 @@
 
 public interface ICatalogService
 {
-    public Location GetDefaultLocation();
-
     public IReadOnlyCollection<OptionDetails> GetOptions(Location location);
 
     public Task<BagContent> AddToBagAsync(NewBagContent newBagContent);
