@@ -27,11 +27,12 @@ public class CatalogService : ICatalogService
         _userIdentityProvider = userIdentityProvider;
     }
 
-    public IReadOnlyCollection<OptionDetails> GetOptions(string city)
+    public IReadOnlyCollection<OptionDetails> GetOptions(Location location)
     {
         var userId = _userIdentityProvider.GetUserIdentifier();
 
-        var options = _catalogClient.GetOptions(city);
+        var locationData = new LocationData(location.Latitude, location.Longitude, location.Radius);
+        var options = _catalogClient.GetOptions(locationData);
 
         var bagSections = _bagSectionRepository.GetAll()
             .Where(s => s.UserId == userId)

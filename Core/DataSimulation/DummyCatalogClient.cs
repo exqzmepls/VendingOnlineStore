@@ -5,7 +5,7 @@ namespace Core.DataSimulation;
 
 public class DummyCatalogClient : ICatalogClient
 {
-    public IReadOnlyCollection<Option> GetOptions(string city)
+    public IReadOnlyCollection<Option> GetOptions(LocationData locationData)
     {
         var r = new List<Option>();
 
@@ -33,10 +33,5 @@ public class DummyCatalogClient : ICatalogClient
         }
 
         return r;
-    }
-
-    public IReadOnlyCollection<Option> GetOptions(Place place)
-    {
-        throw new NotImplementedException();
     }
 }

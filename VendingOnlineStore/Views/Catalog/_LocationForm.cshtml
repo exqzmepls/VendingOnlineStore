@@ -1,0 +1,8 @@
+@model VendingOnlineStore.Models.Catalog.LocationQuery
+
+<form asp-controller="Catalog" asp-action="Query" method="get">
+    <input id="lat" type="hidden" asp-for="Latitude"/>
+    <input id="lon" type="hidden" asp-for="Longitude"/>
+    <input id="radius" type="hidden" asp-for="Radius"/>
+    <input type="submit" class="btn btn-primary" value="Apply location" onclick="onApplyLocation()"/>
+</form>
