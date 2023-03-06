@@ -1,9 +1,9 @@
 ﻿using Core.Clients.Catalog;
-using static Core.DataSimulation.Data;
+using static Application.DataSimulation.Data;
 
-namespace Core.DataSimulation;
+namespace Application.DataSimulation;
 
-public class DummyCatalogClient : ICatalogClient
+internal class DummyCatalogClient : ICatalogClient
 {
     public IReadOnlyCollection<Option> GetOptions(LocationData locationData)
     {

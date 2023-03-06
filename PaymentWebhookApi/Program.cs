@@ -1,20 +1,14 @@
-using Core.Clients.Booking;
-using Core.Repositories.Order;
-using Core.Services.Payment;
+using Application;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 
-services.AddSingleton<IBookingClient, DummyBookingClient>();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+services.AddInfrastructure(connectionString);
 
-services.AddScoped<IOrderRepository, OrderRepository>();
-services.AddScoped<IPaymentService, PaymentService>();
+services.AddApplication();
 
 services.AddControllers();
 

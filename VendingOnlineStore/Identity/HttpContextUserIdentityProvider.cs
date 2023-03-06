@@ -3,7 +3,7 @@ using Core.Identity;
 
 namespace VendingOnlineStore.Identity;
 
-public class HttpContextUserIdentityProvider : IUserIdentityProvider
+internal class HttpContextUserIdentityProvider : IUserIdentityProvider
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 

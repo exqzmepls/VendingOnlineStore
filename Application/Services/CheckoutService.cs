@@ -2,10 +2,13 @@
 using Core.Extensions;
 using Core.Identity;
 using Core.Repositories.BagSection;
+using Core.Services.Checkout;
+using Item = Core.Services.Checkout.Item;
+using PickupPoint = Core.Services.Checkout.PickupPoint;
 
-namespace Core.Services.Checkout;
+namespace Application.Services;
 
-public class CheckoutService : ICheckoutService
+internal class CheckoutService : ICheckoutService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IUserIdentityProvider _userIdentityProvider;

@@ -3,11 +3,12 @@ using Core.Extensions;
 using Core.Identity;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
+using Core.Services.Catalog;
 using Core.Services.Catalog.Exceptions;
 
-namespace Core.Services.Catalog;
+namespace Application.Services;
 
-public class CatalogService : ICatalogService
+internal class CatalogService : ICatalogService
 {
     private readonly ICatalogClient _catalogClient;
     private readonly IBagSectionRepository _bagSectionRepository;

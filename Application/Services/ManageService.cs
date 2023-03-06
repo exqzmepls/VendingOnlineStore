@@ -1,9 +1,10 @@
 ﻿using Core.Identity;
 using Core.Repositories.User;
+using Core.Services.Manage;
 
-namespace Core.Services.Manage;
+namespace Application.Services;
 
-public class ManageService : IManageService
+internal class ManageService : IManageService
 {
     private readonly IUserManager _userManager;
     private readonly IUserIdentityProvider _userIdentityProvider;

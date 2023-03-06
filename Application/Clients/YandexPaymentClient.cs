@@ -1,9 +1,10 @@
-﻿using Yandex.Checkout.V3;
+﻿using Core.Clients.Payment;
+using Yandex.Checkout.V3;
 using PaymentObject = Yandex.Checkout.V3.Payment;
 
-namespace Core.Clients.Payment;
+namespace Application.Clients;
 
-public class YandexPaymentClient : IPaymentClient
+internal class YandexPaymentClient : IPaymentClient
 {
     private readonly AsyncClient _client;
 

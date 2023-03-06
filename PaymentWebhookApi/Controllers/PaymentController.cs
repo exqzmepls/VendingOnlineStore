@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Core.Services.Payment;
 using Microsoft.AspNetCore.Mvc;
 using PaymentWebhookApi.Contracts;
@@ -18,7 +19,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Webhook([FromBody] WebhookNotification notification)
+    public async Task<IActionResult> WebhookAsync([FromBody, Required] WebhookNotification notification)
     {
         try
         {

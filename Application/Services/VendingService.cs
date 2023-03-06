@@ -1,10 +1,11 @@
 ﻿using Core.Clients.Geo;
 using Core.Clients.Vending;
+using Core.Services.Vending;
 using Core.Services.Vending.Dtos;
 
-namespace Core.Services.Vending;
+namespace Application.Services;
 
-public class VendingService : IVendingService
+internal class VendingService : IVendingService
 {
     private readonly IVendingClient _vendingClient;
     private readonly IGeoClient _geoClient;

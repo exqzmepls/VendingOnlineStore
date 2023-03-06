@@ -1,8 +1,9 @@
-﻿using GeoCoordinatePortable;
+﻿using Core.Clients.Geo;
+using GeoCoordinatePortable;
 
-namespace Core.Clients.Geo;
+namespace Application.Clients;
 
-public class GeoClient : IGeoClient
+internal class GeoClient : IGeoClient
 {
     public double? GetDistance(double latitude, double longitude)
     {

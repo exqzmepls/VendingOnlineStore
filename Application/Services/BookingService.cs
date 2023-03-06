@@ -1,10 +1,11 @@
 ﻿using Core.Clients.Payment;
 using Core.Repositories.Order;
+using Core.Services.Booking;
 using Core.Services.Booking.Exceptions;
 
-namespace Core.Services.Booking;
+namespace Application.Services;
 
-public class BookingService : IBookingService
+internal class BookingService : IBookingService
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IPaymentClient _paymentClient;

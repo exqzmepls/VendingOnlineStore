@@ -1,8 +1,10 @@
-﻿using Infrastructure;
+﻿using Core.Repositories;
+using Core.Repositories.User;
+using Infrastructure;
 
-namespace Core.Repositories.User;
+namespace Application.Repositories;
 
-public class UserRepository : IUserRepository
+internal class UserRepository : IUserRepository
 {
     private readonly AppDbContext _dbContext;
 

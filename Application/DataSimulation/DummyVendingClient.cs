@@ -1,10 +1,10 @@
 ﻿using Core.Clients.Vending;
 using Core.Extensions;
-using static Core.DataSimulation.Data;
+using static Application.DataSimulation.Data;
 
-namespace Core.DataSimulation;
+namespace Application.DataSimulation;
 
-public class DummyVendingClient : IVendingClient
+internal class DummyVendingClient : IVendingClient
 {
     public async Task<IReadOnlyCollection<PickupPoint>> GetPickupPointsAsync()
     {

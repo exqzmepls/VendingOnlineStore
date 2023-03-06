@@ -1,21 +1,15 @@
-using Core.Clients.Payment;
-using Core.Repositories.Order;
-using Core.Services.Booking;
+using Application;
 using Infrastructure;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var services = builder.Services;
 
-services.AddSingleton<IPaymentClient, YandexPaymentClient>();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+services.AddInfrastructure(connectionString);
 
-services.AddScoped<IOrderRepository, OrderRepository>();
-services.AddScoped<IBookingService, BookingService>();
+services.AddApplication();
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
