@@ -2,9 +2,9 @@
 using Core.Services.Order;
 using OrderStatusEntity = Infrastructure.Models.OrderStatus;
 
-namespace Core.Extensions;
+namespace Application.Extensions;
 
-public static class EnumExtensions
+internal static class EnumExtensions
 {
     public static OrderStatus MapToOrderStatus(this OrderStatusData orderStatusData)
     {

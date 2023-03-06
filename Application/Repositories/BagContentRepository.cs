@@ -1,10 +1,12 @@
-﻿using Infrastructure;
+﻿using Core.Repositories;
+using Core.Repositories.BagContent;
+using Infrastructure;
 using BagContentEntity = Infrastructure.Models.BagContent;
 using BagSectionEntity = Infrastructure.Models.BagSection;
 
-namespace Core.Repositories.BagContent;
+namespace Application.Repositories;
 
-public class BagContentRepository : IBagContentRepository
+internal class BagContentRepository : IBagContentRepository
 {
     private readonly AppDbContext _appDbContext;
 

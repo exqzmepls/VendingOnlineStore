@@ -1,13 +1,16 @@
-﻿using Core.Clients.Booking;
+﻿using Application.Extensions;
+using Core.Clients.Booking;
 using Core.Clients.Payment;
 using Core.Extensions;
 using Core.Identity;
 using Core.Repositories.BagSection;
 using Core.Repositories.Order;
+using Core.Services.Order;
+using BagSectionNotFoundException = Core.Services.Order.BagSectionNotFoundException;
 
-namespace Core.Services.Order;
+namespace Application.Services;
 
-public class OrderService : IOrderService
+internal class OrderService : IOrderService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IOrderRepository _orderRepository;

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace VendingOnlineStore.Identity;
 
-public class MicrosoftUserManager : IUserManager
+internal class MicrosoftUserManager : IUserManager
 {
     private readonly UserManager<User> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;

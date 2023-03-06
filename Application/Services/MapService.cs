@@ -1,8 +1,9 @@
-﻿using static Core.DataSimulation.Data;
+﻿using Core.Services.Map;
+using static Application.DataSimulation.Data;
 
-namespace Core.Services.Map;
+namespace Application.Services;
 
-public class MapService : IMapService
+internal class MapService : IMapService
 {
     public Coordinates GetDefaultLocation()
     {

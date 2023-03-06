@@ -1,10 +1,10 @@
 using Core.Clients.PickupPoint;
 using Core.Extensions;
-using static Core.DataSimulation.Data;
+using static Application.DataSimulation.Data;
 
-namespace Core.DataSimulation;
+namespace Application.DataSimulation;
 
-public class DummyPickupPointClient : IPickupPointClient
+internal class DummyPickupPointClient : IPickupPointClient
 {
     public async Task<IReadOnlyCollection<PickupPointPresentation>> GetPresentationsAsync(
         IEnumerable<PickupPointContentsSpecification> specifications)

@@ -1,9 +1,10 @@
+using Core.Clients.Booking;
 using Core.Extensions;
-using static Core.DataSimulation.Data;
+using static Application.DataSimulation.Data;
 
-namespace Core.Clients.Booking;
+namespace Application.DataSimulation;
 
-public class DummyBookingClient : IBookingClient
+internal class DummyBookingClient : IBookingClient
 {
     public async Task<BookingDetails> CreateBookingAsync(NewBooking newBooking)
     {

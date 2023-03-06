@@ -3,13 +3,16 @@ using Core.Extensions;
 using Core.Identity;
 using Core.Repositories.BagContent;
 using Core.Repositories.BagSection;
+using Core.Services.Bag;
 using Core.Services.Bag.Exceptions;
+using Item = Core.Services.Bag.Item;
 using PickupPointData = Core.Clients.PickupPoint.PickupPoint;
 using ItemData = Core.Clients.PickupPoint.Item;
+using PickupPoint = Core.Services.Bag.PickupPoint;
 
-namespace Core.Services.Bag;
+namespace Application.Services;
 
-public class BagService : IBagService
+internal class BagService : IBagService
 {
     private readonly IBagSectionRepository _bagSectionRepository;
     private readonly IBagContentRepository _bagContentRepository;

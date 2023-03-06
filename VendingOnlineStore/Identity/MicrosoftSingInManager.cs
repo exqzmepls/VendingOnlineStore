@@ -5,7 +5,7 @@ using SignInResult = Core.Identity.SignInResult;
 
 namespace VendingOnlineStore.Identity;
 
-public class MicrosoftSingInManager : ISignInManager<User>
+internal class MicrosoftSingInManager : ISignInManager<User>
 {
     private readonly SignInManager<User> _signInManager;
 

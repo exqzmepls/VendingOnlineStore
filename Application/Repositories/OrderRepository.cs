@@ -1,12 +1,15 @@
-﻿using Core.Extensions;
+﻿using Application.Extensions;
+using Core.Extensions;
+using Core.Repositories;
+using Core.Repositories.Order;
 using Infrastructure;
 using Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 using OrderEntity = Infrastructure.Models.Order;
 
-namespace Core.Repositories.Order;
+namespace Application.Repositories;
 
-public class OrderRepository : IOrderRepository
+internal class OrderRepository : IOrderRepository
 {
     private readonly AppDbContext _appDbContext;
 

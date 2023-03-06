@@ -1,11 +1,12 @@
-﻿using Core.Repositories.BagSection;
+﻿using Core.Extensions;
+using Core.Repositories.BagSection;
 using Core.Repositories.Order;
 using Core.Services.Order;
 using Infrastructure.Models;
 
-namespace Core.Extensions;
+namespace Application.Extensions;
 
-public static class QueryableExtensions
+internal static class QueryableExtensions
 {
     public static IQueryable<OrderBrief> MapToOrderBrief(this IQueryable<OrderBriefData> source)
     {

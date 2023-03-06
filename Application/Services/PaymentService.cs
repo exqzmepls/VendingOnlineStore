@@ -1,11 +1,12 @@
 using Core.Clients.Booking;
 using Core.Repositories.Order;
+using Core.Services.Payment;
 using Core.Services.Payment.Exceptions;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Services.Payment;
+namespace Application.Services;
 
-public class PaymentService : IPaymentService
+internal class PaymentService : IPaymentService
 {
     private readonly IBookingClient _bookingClient;
     private readonly IOrderRepository _orderRepository;

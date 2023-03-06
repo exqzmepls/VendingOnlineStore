@@ -1,6 +1,6 @@
-﻿namespace Core.DataSimulation;
+﻿namespace Application.DataSimulation;
 
-public static class Data
+internal static class Data
 {
     public static readonly IList<SimulatedPickupPoint> PickupPoints = new List<SimulatedPickupPoint>
     {

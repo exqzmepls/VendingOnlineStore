@@ -1,11 +1,12 @@
 ﻿using Core.Identity;
+using Core.Services.Account;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace Core.Services.Account;
+namespace Application.Services;
 
-public class AccountService : IAccountService
+internal class AccountService : IAccountService
 {
     private readonly UserManager<User> _userManager;
     private readonly IUserStore<User> _userStore;
