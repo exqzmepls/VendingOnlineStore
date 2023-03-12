@@ -14,6 +14,8 @@ public record OrderBrief
     public required Guid Id { get; init; }
     public required DateTime CreationDateUtc { get; init; }
     public required OrderStatus Status { get; init; }
+    public required string PickupPointAddress { get; init; }
+    public required decimal TotalPrice { get; init; }
 }
 
 public record OrderDetails

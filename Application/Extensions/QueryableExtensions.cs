@@ -14,7 +14,9 @@ internal static class QueryableExtensions
         {
             Id = orderData.Id,
             CreationDateUtc = orderData.CreationDateUtc,
-            Status = orderData.Status.MapToOrderStatus()
+            Status = orderData.Status.MapToOrderStatus(),
+            PickupPointAddress = orderData.PickupPointAddress,
+            TotalPrice = orderData.TotalPrice
         });
     }
 
@@ -27,7 +29,9 @@ internal static class QueryableExtensions
             CreationDateUtc = order.CreationDateUtc,
             Status = order.Status.MapToOrderStatusData(),
             PaymentId = order.Payment!.ExternalId,
-            BookingId = order.BookingId
+            BookingId = order.BookingId,
+            PickupPointAddress = order.OrderPickupPoint!.Address,
+            TotalPrice = order.TotalPrice
         });
     }
 

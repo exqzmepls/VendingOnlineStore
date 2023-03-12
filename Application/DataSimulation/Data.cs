@@ -11,13 +11,13 @@ internal static class Data
 
     public static readonly IList<SimulatedItem> Items = new List<SimulatedItem>
     {
-        new("i1", "water", "cool water", "img/water.jpg"),
-        new("i2", "chocolate", "cool chocolate", "img/choko.jpg"),
-        new("i3", "cookies", "cool cookies", "img/cookies.jpg"),
-        new("i4", "cola", "cool cola", "img/cola.jpg"),
-        new("i5", "crisps", "cool crisps", "img/crisps.jpg"),
-        new("i6", "snickers", "cool snickers", "img/snickers.jpg"),
-        new("i7", "suhariki", "cool suhariki", "img/suhari.jpg")
+        new("i1", "water", "cool water", "https://localhost:7128/img/water.jpg"),
+        new("i2", "chocolate", "cool chocolate", "https://localhost:7128/img/choko.jpg"),
+        new("i3", "cookies", "cool cookies", "https://localhost:7128/img/cookies.jpg"),
+        new("i4", "cola", "cool cola", "https://localhost:7128/img/cola.jpg"),
+        new("i5", "crisps", "cool crisps", "https://localhost:7128/img/crisps.jpg"),
+        new("i6", "snickers", "cool snickers", "https://localhost:7128/img/snickers.jpg"),
+        new("i7", "suhariki", "cool suhariki", "https://localhost:7128/img/suhari.jpg")
     };
 
     public static readonly IList<SimulatedPickupPointContent> PickupPointsContents =

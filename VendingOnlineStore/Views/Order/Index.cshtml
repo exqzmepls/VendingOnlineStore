@@ -7,32 +7,28 @@
 
 <h1>Orders</h1>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreationDateUtc)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
+<div class="list-group">
     @foreach (var order in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => order.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => order.CreationDateUtc)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = order.Id })
-            </td>
-        </tr>
+        <a asp-action="Details" asp-route-id="@order.Id" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+                <h2 class="mb-1">Order @order.Id</h2>
+                <small>@order.CreationDateUtc</small>
+            </div>
+            <dl class="row">
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.PickupPointAddress)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => order.PickupPointAddress)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.TotalPrice)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => order.TotalPrice)
+                </dd>
+            </dl>
+        </a>
     }
-    </tbody>
-</table>
+</div>
