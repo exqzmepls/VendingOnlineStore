@@ -13,13 +13,13 @@ internal class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task UpdateCityAsync(Guid userId, string city)
+    public async Task UpdateCityAsync(Guid userId, int cityId)
     {
         var user = await _dbContext.Users.FindAsync(userId);
         if (user == default)
             throw new UserNotFoundException("User does not exist");
 
-        user.City = city;
+        user.CityExternalId = cityId;
         _dbContext.Users.Update(user);
 
         try

@@ -5,6 +5,7 @@ using Application.Services;
 using Core.Clients.Booking;
 using Core.Clients.Catalog;
 using Core.Clients.Geo;
+using Core.Clients.Map;
 using Core.Clients.Payment;
 using Core.Clients.PickupPoint;
 using Core.Clients.Vending;
@@ -43,6 +44,8 @@ public static class DependencyInjection
         services.AddSingleton<IBookingClient, DummyBookingClient>();
         services.AddSingleton<ICatalogClient, DummyCatalogClient>();
         services.AddSingleton<IPaymentClient, YandexPaymentClient>();
+        services.AddSingleton<IMapClient, MapClient>();
+        services.AddHttpClient<IMapClient, MapClient>();
         services.AddScoped<IGeoClient, GeoClient>();
         return services;
     }

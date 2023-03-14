@@ -2,5 +2,5 @@
 
 public interface IUserRepository
 {
-    public Task UpdateCityAsync(Guid userId, string city);
+    public Task UpdateCityAsync(Guid userId, int cityId);
 }

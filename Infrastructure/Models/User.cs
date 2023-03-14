@@ -4,7 +4,7 @@ namespace Infrastructure.Models;
 
 public class User : IdentityUser<Guid>
 {
-    public string City { get; set; } = null!;
+    public int CityExternalId { get; set; }
 
     public IReadOnlyCollection<Order>? Orders { get; set; }
 

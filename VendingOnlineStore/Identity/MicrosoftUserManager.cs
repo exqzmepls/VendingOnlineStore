@@ -34,7 +34,7 @@ internal class MicrosoftUserManager : IUserManager
     {
         var userDetails = new UserDetails(
             user.UserName!,
-            user.City
+            user.CityExternalId
         );
         return userDetails;
     }

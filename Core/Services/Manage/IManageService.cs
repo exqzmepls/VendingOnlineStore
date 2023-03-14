@@ -2,12 +2,16 @@
 
 public interface IManageService
 {
+    Task<IEnumerable<City>> GetCitiesAsync();
+    
     public Task<Profile?> GetProfileOrDefaultAsync();
 
     public Task<UpdateResult> UpdateProfileAsync(ProfileUpdate update);
 }
 
-public record Profile(string Login, string City);
+public record City(int Id, string Name);
+
+public record Profile(string Login, int CityId);
 
 public record UpdateResult
 {
@@ -24,4 +28,4 @@ public record UpdateResult
 
 public record UpdateError(string Description);
 
-public record ProfileUpdate(string City);
+public record ProfileUpdate(int CityId);

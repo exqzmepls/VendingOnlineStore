@@ -2,12 +2,16 @@
 
 public interface IAccountService
 {
+    public Task<IEnumerable<City>> GetCitiesAsync();
+    
     public Task<RegisterResult> RegisterAsync(NewUser newUser);
 
     public Task<LoginResult> LoginAsync(LoginDetails loginDetails);
 
     public Task LogoutAsync();
 }
+
+public record City(int Id, string Name);
 
 public record RegisterResult
 {
@@ -34,14 +38,14 @@ public record RegisterResult
 
 public record RegisterError(string Description);
 
-public record NewUser(string Login, string City, string Password);
+public record NewUser(string Login, int CityId, string Password);
 
 public record LoginResult
 {
     private static readonly LoginResult Success = new() { Succeeded = true };
     private static readonly LoginResult Failed = new() { Succeeded = false };
 
-    public bool Succeeded { get; protected init; }
+    public bool Succeeded { get; private init; }
 
     public static LoginResult SuccessResult() => Success;
 

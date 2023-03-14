@@ -1,4 +1,5 @@
-﻿using Core.Identity;
+﻿using Core.Clients.Map;
+using Core.Identity;
 using Core.Services.Account;
 using Infrastructure.Models;
 using Microsoft.AspNetCore.Identity;
@@ -8,23 +9,37 @@ namespace Application.Services;
 
 internal class AccountService : IAccountService
 {
+    private readonly IMapClient _mapClient;
     private readonly UserManager<User> _userManager;
     private readonly IUserStore<User> _userStore;
     private readonly ISignInManager<User> _signInManager;
     private readonly ILogger<AccountService> _logger;
 
-    public AccountService(UserManager<User> userManager, IUserStore<User> userStore, ISignInManager<User> signInManager,
-        ILogger<AccountService> logger)
+    public AccountService(
+        IMapClient mapClient,
+        UserManager<User> userManager,
+        IUserStore<User> userStore,
+        ISignInManager<User> signInManager,
+        ILogger<AccountService> logger
+    )
     {
+        _mapClient = mapClient;
         _userManager = userManager;
         _userStore = userStore;
         _signInManager = signInManager;
         _logger = logger;
     }
 
+    public async Task<IEnumerable<City>> GetCitiesAsync()
+    {
+        var cities = await _mapClient.GetCitiesAsync();
+        var result = cities.Select(city => new City(city.Id, city.Name));
+        return result;
+    }
+
     public async Task<RegisterResult> RegisterAsync(NewUser newUser)
     {
-        var user = CreateUser(newUser.City);
+        var user = CreateUser(newUser.CityId);
 
         await _userStore.SetUserNameAsync(user, newUser.Login, CancellationToken.None);
         var identityResult = await _userManager.CreateAsync(user, newUser.Password);
@@ -59,12 +74,12 @@ internal class AccountService : IAccountService
         _logger.LogInformation("User logged out");
     }
 
-    private static User CreateUser(string city)
+    private static User CreateUser(int cityId)
     {
         try
         {
             var user = Activator.CreateInstance<User>();
-            user.City = city;
+            user.CityExternalId = cityId;
             return user;
         }
         catch
