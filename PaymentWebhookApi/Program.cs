@@ -8,7 +8,7 @@ var services = builder.Services;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 services.AddInfrastructure(connectionString);
 
-services.AddPaymentWebhookApplication();
+services.AddPaymentApplication();
 
 services.AddControllers();
 

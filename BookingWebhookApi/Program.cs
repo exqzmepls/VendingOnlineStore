@@ -9,7 +9,7 @@ var services = builder.Services;
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 services.AddInfrastructure(connectionString);
 
-services.AddBookingWebhookApplication();
+services.AddBookingApplication();
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();

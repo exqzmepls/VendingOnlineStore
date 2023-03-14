@@ -36,15 +36,15 @@ public static class DependencyInjection
         return services;
     }
 
-    public static IServiceCollection AddPaymentWebhookApplication(this IServiceCollection services)
+    public static IServiceCollection AddPaymentApplication(this IServiceCollection services)
     {
         services.AddSingleton<IBookingClient, DummyBookingClient>();
         services.AddScoped<IOrderRepository, OrderRepository>();
         services.AddScoped<IPaymentService, PaymentService>();
         return services;
     }
-    
-    public static IServiceCollection AddBookingWebhookApplication(this IServiceCollection services)
+
+    public static IServiceCollection AddBookingApplication(this IServiceCollection services)
     {
         services.AddSingleton<IPaymentClient, YandexPaymentClient>();
         services.AddScoped<IOrderRepository, OrderRepository>();
