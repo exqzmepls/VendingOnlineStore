@@ -4,6 +4,7 @@ namespace VendingOnlineStore.Models.Manage;
 
 public class UpdateProfileViewModel
 {
-    [Required(AllowEmptyStrings = false)]
-    public string City { get; set; } = null!;
+    [Required]
+    [Display(Name = "City")]
+    public int CityId { get; set; }
 }

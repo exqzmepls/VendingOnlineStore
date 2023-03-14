@@ -28,6 +28,8 @@ public class ManageController : Controller
             return NotFound();
 
         var model = MapToProfileViewModel(profile);
+        var cities = await _manageService.GetCitiesAsync();
+        ViewBag.CityOptions = cities.Select(MapToCityOptionViewModel);
         return View(model);
     }
 
@@ -47,7 +49,7 @@ public class ManageController : Controller
     {
         var profileViewModel = new ProfileViewModel(
             profile.Login,
-            profile.City
+            profile.CityId
         );
         return profileViewModel;
     }
@@ -55,8 +57,17 @@ public class ManageController : Controller
     private static ProfileUpdate MapToProfileUpdate(UpdateProfileViewModel updateProfileViewModel)
     {
         var profileUpdate = new ProfileUpdate(
-            updateProfileViewModel.City
+            updateProfileViewModel.CityId
         );
         return profileUpdate;
+    }
+
+    private static CityOptionViewModel MapToCityOptionViewModel(City city)
+    {
+        var cityOptionViewModel = new CityOptionViewModel(
+            city.Id,
+            city.Name
+        );
+        return cityOptionViewModel;
     }
 }

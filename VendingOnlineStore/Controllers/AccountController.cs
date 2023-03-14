@@ -16,8 +16,9 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Register()
+    public async Task<IActionResult> RegisterAsync()
     {
+        await SetCityOptionsAsync();
         return View();
     }
 
@@ -37,6 +38,7 @@ public class AccountController : Controller
             ModelState.AddModelError(string.Empty, error.Description);
         }
 
+        await SetCityOptionsAsync();
         return View(model);
     }
 
@@ -68,11 +70,20 @@ public class AccountController : Controller
         return SuccessRedirect();
     }
 
+    private static CityOptionViewModel MapToCityOptionViewModel(City city)
+    {
+        var cityOptionViewModel = new CityOptionViewModel(
+            city.Id,
+            city.Name
+        );
+        return cityOptionViewModel;
+    }
+
     private static NewUser MapToNewUser(RegisterViewModel registerViewModel)
     {
         var newUser = new NewUser(
             registerViewModel.Login,
-            registerViewModel.City,
+            registerViewModel.CityId,
             registerViewModel.Password
         );
         return newUser;
@@ -85,6 +96,12 @@ public class AccountController : Controller
             loginViewModel.Password
         );
         return loginDetails;
+    }
+
+    private async Task SetCityOptionsAsync()
+    {
+        var cities = await _accountService.GetCitiesAsync();
+        ViewBag.CityOptions = cities.Select(MapToCityOptionViewModel);
     }
 
     private RedirectToActionResult SuccessRedirect()

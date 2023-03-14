@@ -2,12 +2,12 @@
 
 public class ProfileViewModel
 {
-    public ProfileViewModel(string login, string city)
+    public ProfileViewModel(string login, int cityId)
     {
         Login = login;
-        City = city;
+        CityId = cityId;
     }
 
     public string Login { get; }
-    public string City { get; }
+    public int CityId { get; }
 }

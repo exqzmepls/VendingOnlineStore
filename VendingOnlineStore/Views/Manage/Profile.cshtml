@@ -18,15 +18,14 @@
         @{
             var updateProfileViewModel = new UpdateProfileViewModel
             {
-                City = Model.City
+                CityId = Model.CityId
             };
-            await Html.RenderPartialAsync("_UpdateProfileForm", updateProfileViewModel);
         }
+        <partial name="_UpdateProfileForm" model="updateProfileViewModel"/>
     </div>
 </div>
 
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial"/>
-    <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
 }
