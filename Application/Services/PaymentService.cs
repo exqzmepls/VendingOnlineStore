@@ -108,7 +108,7 @@ internal class PaymentService : IPaymentService
     {
         var orderUpdate = new OrderUpdateData
         {
-            NewStatus = OrderStatusData.WaitingPayment,
+            NewStatus = OrderStatusData.WaitingReceiving,
             ReleaseCode = releaseCode
         };
         UpdateOrder(order, orderUpdate);

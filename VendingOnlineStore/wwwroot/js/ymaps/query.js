@@ -32,7 +32,7 @@ function init() {
         // noinspection JSUnresolvedVariable
         const button = new ymaps.control.Button({
             data: {
-                content: "Set as Geolocation"
+                image: "img/geolocation-16.png"
             },
             options: {
                 selectOnClick: false,

@@ -37,6 +37,22 @@ public static class DependencyInjection
         return services;
     }
 
+    public static IServiceCollection AddPaymentApplication(this IServiceCollection services)
+    {
+        services.AddSingleton<IBookingClient, DummyBookingClient>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        return services;
+    }
+
+    public static IServiceCollection AddBookingApplication(this IServiceCollection services)
+    {
+        services.AddSingleton<IPaymentClient, YandexPaymentClient>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+        services.AddScoped<IBookingService, BookingService>();
+        return services;
+    }
+
     private static IServiceCollection AddClients(this IServiceCollection services)
     {
         services.AddSingleton<IVendingClient, DummyVendingClient>();
@@ -62,7 +78,6 @@ public static class DependencyInjection
     private static IServiceCollection AddServices(this IServiceCollection services)
     {
         services.AddScoped<IAccountService, AccountService>();
-        services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IManageService, ManageService>();
         services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IMapService, MapService>();
@@ -70,7 +85,6 @@ public static class DependencyInjection
         services.AddScoped<IVendingService, VendingService>();
         services.AddScoped<ICheckoutService, CheckoutService>();
         services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<IPaymentService, PaymentService>();
         return services;
     }
 }
