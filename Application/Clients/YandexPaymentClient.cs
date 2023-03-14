@@ -1,4 +1,5 @@
 ﻿using Core.Clients.Payment;
+using Microsoft.Extensions.Configuration;
 using Yandex.Checkout.V3;
 using PaymentObject = Yandex.Checkout.V3.Payment;
 
@@ -8,9 +9,12 @@ internal class YandexPaymentClient : IPaymentClient
 {
     private readonly AsyncClient _client;
 
-    public YandexPaymentClient()
+    public YandexPaymentClient(IConfiguration configuration)
     {
-        var client = new Client("957383", "test_XeWOJBeeQewqgpPhdi64qbHg_QBhwcPy1XzwSRggHpk");
+        var configurationSection = configuration.GetRequiredSection("YooKassa");
+        var shopIdSection = configurationSection.GetRequiredSection("ShopId");
+        var secretKeySection = configurationSection.GetRequiredSection("SecretKey");
+        var client = new Client(shopIdSection.Value, secretKeySection.Value);
         _client = client.MakeAsync();
     }
 
