@@ -14,9 +14,9 @@ public class MapController : Controller
     }
 
     [HttpGet]
-    public IActionResult PickupPoints()
+    public async Task<IActionResult> PickupPointsAsync()
     {
-        var pickupPoints = _mapService.GetPickupPoints();
+        var pickupPoints = await _mapService.GetPickupPointsAsync();
         var result = new FeatureCollection
         {
             Features = pickupPoints.Select(MapToFeatureContract)
@@ -25,9 +25,9 @@ public class MapController : Controller
     }
 
     [HttpGet]
-    public IActionResult DefaultLocation()
+    public async Task<IActionResult> DefaultLocationAsync()
     {
-        var location = _mapService.GetDefaultLocation();
+        var location = await _mapService.GetDefaultLocationAsync();
         var result = new[]
         {
             location.Latitude,

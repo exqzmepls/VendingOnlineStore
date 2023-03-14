@@ -1,18 +1,38 @@
-﻿using Core.Services.Map;
-using static Application.DataSimulation.Data;
+﻿using Core.Clients.Map;
+using Core.Identity;
+using Core.Services.Map;
 
 namespace Application.Services;
 
 internal class MapService : IMapService
 {
-    public Coordinates GetDefaultLocation()
+    private readonly IUserManager _userManager;
+    private readonly IMapClient _mapClient;
+
+    public MapService(
+        IUserManager userManager,
+        IMapClient mapClient
+    )
     {
-        return new Coordinates(58.009535, 56.224404);
+        _userManager = userManager;
+        _mapClient = mapClient;
     }
 
-    public IEnumerable<PickupPoint> GetPickupPoints()
+    public async Task<Coordinates> GetDefaultLocationAsync()
     {
-        return PickupPoints.Select(p =>
-            new PickupPoint(p.Address, p.Description, new Coordinates(p.Latitude, p.Longitude)));
+        var user = await _userManager.GetUserOrDefaultAsync();
+        var userCity = await _mapClient.GetCityAsync(user!.CityId);
+        return new Coordinates(userCity.Latitude, userCity.Longitude);
+    }
+
+    public async Task<IEnumerable<PickupPoint>> GetPickupPointsAsync()
+    {
+        var pickupPoints = await _mapClient.GetPickupPointsAsync();
+        var result = pickupPoints.Select(pickupPoint =>
+        {
+            var coordinates = new Coordinates(pickupPoint.Latitude, pickupPoint.Longitude);
+            return new PickupPoint(pickupPoint.Address, pickupPoint.Description, coordinates);
+        });
+        return result;
     }
 }

@@ -2,9 +2,9 @@
 
 public interface IMapService
 {
-    public Coordinates GetDefaultLocation();
+    public Task<Coordinates> GetDefaultLocationAsync();
 
-    public IEnumerable<PickupPoint> GetPickupPoints();
+    public Task<IEnumerable<PickupPoint>> GetPickupPointsAsync();
 }
 
 public record PickupPoint(string Address, string Description, Coordinates Coordinates);
