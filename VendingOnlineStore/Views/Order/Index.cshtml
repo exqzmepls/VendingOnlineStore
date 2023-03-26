@@ -5,30 +5,11 @@
     ViewData["Title"] = "Orders";
 }
 
-<h1>Orders</h1>
+<h1 class="fs-2">Orders</h1>
 
 <div class="list-group">
     @foreach (var order in Model)
     {
-        <a asp-action="Details" asp-route-id="@order.Id" class="list-group-item list-group-item-action">
-            <div class="d-flex w-100 justify-content-between">
-                <h2 class="mb-1">Order @order.Id</h2>
-                <small>@order.CreationDateUtc</small>
-            </div>
-            <dl class="row">
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.PickupPointAddress)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => order.PickupPointAddress)
-                </dd>
-                <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.TotalPrice)
-                </dt>
-                <dd class="col-sm-10">
-                    @Html.DisplayFor(model => order.TotalPrice)
-                </dd>
-            </dl>
-        </a>
+        <partial name="_Order" model="order"/>
     }
 </div>
