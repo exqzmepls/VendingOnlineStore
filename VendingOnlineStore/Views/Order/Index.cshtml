@@ -5,34 +5,11 @@
     ViewData["Title"] = "Orders";
 }
 
-<h1>Orders</h1>
+<h1 class="fs-2">Orders</h1>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Status)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CreationDateUtc)
-        </th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
+<div class="list-group">
     @foreach (var order in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => order.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => order.CreationDateUtc)
-            </td>
-            <td>
-                @Html.ActionLink("Details", "Details", new { id = order.Id })
-            </td>
-        </tr>
+        <partial name="_Order" model="order"/>
     }
-    </tbody>
-</table>
+</div>

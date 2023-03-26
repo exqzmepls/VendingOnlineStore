@@ -22,6 +22,7 @@ internal class OrderRepository : IOrderRepository
     {
         var result = _appDbContext.Orders
             .Include(o => o.Payment)
+            .Include(o => o.OrderPickupPoint)
             .MapToOrderBriefData();
         return result;
     }

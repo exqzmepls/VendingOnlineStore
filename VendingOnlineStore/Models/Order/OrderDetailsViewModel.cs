@@ -2,9 +2,11 @@
 
 public class OrderDetailsViewModel
 {
-    public OrderDetailsViewModel(DateTime creationDateUtc, OrderStatus status, string paymentLink, int? releaseCode,
-        OrderPickupPointViewModel pickupPoint, IEnumerable<OrderContentViewModel> contents, decimal totalPrice)
+    public OrderDetailsViewModel(Guid id, DateTime creationDateUtc, OrderStatus status, string paymentLink,
+        int? releaseCode, OrderPickupPointViewModel pickupPoint, IEnumerable<OrderContentViewModel> contents,
+        decimal totalPrice)
     {
+        Id = id;
         CreationDateUtc = creationDateUtc;
         Status = status;
         PaymentLink = paymentLink;
@@ -14,6 +16,7 @@ public class OrderDetailsViewModel
         TotalPrice = totalPrice;
     }
 
+    public Guid Id { get; }
     public DateTime CreationDateUtc { get; }
     public OrderStatus Status { get; }
     public string PaymentLink { get; }

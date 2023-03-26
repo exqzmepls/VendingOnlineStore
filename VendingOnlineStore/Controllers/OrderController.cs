@@ -52,7 +52,9 @@ public class OrderController : Controller
         {
             Id = order.Id,
             CreationDateUtc = order.CreationDateUtc,
-            Status = orderStatus
+            Status = orderStatus,
+            PickupPointAddress = order.PickupPointAddress,
+            TotalPrice = order.TotalPrice
         };
         return orderViewModel;
     }
@@ -63,6 +65,7 @@ public class OrderController : Controller
         var pickupPointViewModel = MapToOrderPickupPointViewModel(orderDetails.PickupPoint);
         var orderContentsViewModels = orderDetails.Contents.Select(MapToOrderContentViewModel);
         var orderDetailsViewModel = new OrderDetailsViewModel(
+            orderDetails.Id,
             orderDetails.CreationDateUtc,
             orderStatus,
             orderDetails.PaymentLink,

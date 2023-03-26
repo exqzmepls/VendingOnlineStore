@@ -19,6 +19,8 @@ public record OrderBriefData
     public required OrderStatusData Status { get; init; }
     public required string PaymentId { get; init; }
     public required string BookingId { get; init; }
+    public required string PickupPointAddress { get; init; }
+    public required decimal TotalPrice { get; init; }
 }
 
 public record OrderDetailsData
